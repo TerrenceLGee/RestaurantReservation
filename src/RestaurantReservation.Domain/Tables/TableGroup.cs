@@ -5,22 +5,25 @@ namespace RestaurantReservation.Domain.Tables;
 
 public class TableGroup : BaseEntity
 {
+    public string Name { get; private set; }
     public Guid RestaurantId { get; private set; }
     public Restaurant? Restaurant { get; set; }
     public ICollection<TableGroupTable> Tables { get; private set; } = [];
     
     private TableGroup() {}
 
-    private TableGroup(Guid id, Guid restaurantId) : base(id)
+    private TableGroup(Guid id, Guid restaurantId, string name) : base(id)
     {
         RestaurantId = restaurantId;
+        Name = name;
     }
 
-    public static TableGroup Create(Guid restaurantId)
+    public static TableGroup Create(Guid restaurantId, string name)
     {
         return new TableGroup(
             Guid.CreateVersion7(),
-            restaurantId);
+            restaurantId,
+            name);
     }
 
     public void AddTables(List<RestaurantTable> tables)

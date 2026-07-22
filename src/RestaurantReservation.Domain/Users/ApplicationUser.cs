@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
+using RestaurantReservation.Domain.Reservations;
+
 namespace RestaurantReservation.Domain.Users;
 
 public class ApplicationUser : IdentityUser

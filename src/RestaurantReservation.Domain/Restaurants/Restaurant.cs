@@ -1,6 +1,7 @@
 ﻿using RestaurantReservation.Domain.Abstractions;
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Common.Helpers;
+using RestaurantReservation.Domain.Reservations;
 using RestaurantReservation.Domain.Restaurants.Errors;
 using RestaurantReservation.Domain.Tables;
 
@@ -62,7 +63,7 @@ public class Restaurant : BaseEntity
             return Result.Failure(RestaurantErrors.InvalidScheduleDay(scheduleDay.Day.ToString()));
         }
 
-        if (!ValidationHelper.IsStartAndEndTimeValid(scheduleDay.DailyHours[0], scheduleDay.DailyHours[1]))
+        if (!ValidationHelper.IsRestaurantScheduleStartAndEndTimeValid(scheduleDay.DailyHours[0], scheduleDay.DailyHours[1]))
         {
             return Result.Failure(RestaurantErrors.ScheduleStartComesAfterEnd);
         }
@@ -84,5 +85,12 @@ public class Restaurant : BaseEntity
     {
         var table = RestaurantTable.Create(Id, seats);
         Tables.Add(table);
+    }
+
+    public void AddTableGroup(string name, List<RestaurantTable> tables)
+    {
+        var tableGroup = TableGroup.Create(Id, name);
+        tableGroup.AddTables(tables);
+        TableGroups.Add(tableGroup);
     }
 }
