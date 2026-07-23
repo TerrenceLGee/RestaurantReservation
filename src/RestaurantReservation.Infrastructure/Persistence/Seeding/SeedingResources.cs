@@ -155,7 +155,7 @@ public static class SeedingResources
             var count = 0;
             var tablesInGroup = info.Key;
             var groupTitle = info.Value;
-            var tablesToAdd = new List<RestaurantTable>();
+            var tablesToAdd = new List<Table>();
             if (string.IsNullOrEmpty(groupTitle))
             {
                 runningCount += tablesInGroup;

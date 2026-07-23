@@ -10,9 +10,11 @@ namespace RestaurantReservation.Application.Abstractions;
 public interface IApplicationDbContext
 {
     DbSet<Restaurant> Restaurants { get; }
-    DbSet<RestaurantTable> Tables { get; }
+    DbSet<Table> Tables { get; }
     DbSet<TableGroup> TableGroups { get; }
     DbSet<Reservation> Reservations { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<TableGroupTable> TableGroupTables { get; }
+    DbSet<ReservationTable> ReservationTables { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

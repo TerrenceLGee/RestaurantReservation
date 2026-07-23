@@ -15,10 +15,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<ApplicationUser, IdentityRole, string>(options), IApplicationDbContext
 {
     public DbSet<Restaurant> Restaurants => Set<Restaurant>();
-    public DbSet<RestaurantTable> Tables => Set<RestaurantTable>();
+    public DbSet<Table> Tables => Set<Table>();
     public DbSet<TableGroup> TableGroups => Set<TableGroup>();
     public DbSet<Reservation> Reservations => Set<Reservation>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<TableGroupTable> TableGroupTables => Set<TableGroupTable>();
+    public DbSet<ReservationTable> ReservationTables => Set<ReservationTable>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -11,7 +11,7 @@ public class Restaurant : BaseEntity
 {
     public string Name { get; private set; } = string.Empty;
     public ICollection<RestaurantSchedule> Schedule { get; set; } = [];
-    public ICollection<RestaurantTable> Tables { get; set; } = [];
+    public ICollection<Table> Tables { get; set; } = [];
     public ICollection<TableGroup> TableGroups { get; set; } = [];
     public ICollection<Reservation> Reservations { get; set; } = [];
     
@@ -83,14 +83,44 @@ public class Restaurant : BaseEntity
 
     public void AddTable(int seats)
     {
-        var table = RestaurantTable.Create(Id, seats);
+        var table = Table.Create(Id, seats);
         Tables.Add(table);
     }
 
-    public void AddTableGroup(string name, List<RestaurantTable> tables)
+    public void AddTableGroup(string name, List<Table> tables)
     {
         var tableGroup = TableGroup.Create(Id, name);
         tableGroup.AddTables(tables);
         TableGroups.Add(tableGroup);
+    }
+
+    public Result RestaurantIsOpen(
+        DateOnly reservationDate, 
+        TimeOnly reservationStartTime, 
+        TimeOnly reservationEndTime)
+    {
+        var intValueForDay = (int)reservationDate.DayOfWeek;
+        var scheduleToCheck = Schedule.FirstOrDefault(s => (int)s.Day == intValueForDay);
+
+        if (scheduleToCheck is null)
+        {
+            return Result.Failure(RestaurantErrors.InvalidScheduleDay(Name));
+        }
+
+        var opening = scheduleToCheck.DailyHours[0];
+        var closing = scheduleToCheck.DailyHours[1];
+
+        if (!opening.HasValue || !closing.HasValue)
+        {
+            return Result.Failure(RestaurantErrors.RestaurantClosedToday(Name, reservationDate));
+        }
+
+        return reservationStartTime > opening && reservationEndTime < closing
+            ? Result.Success()
+            : Result.Failure(RestaurantErrors.HoursOutOfRange(
+                Name,
+                reservationDate,
+                reservationStartTime,
+                reservationEndTime));
     }
 }

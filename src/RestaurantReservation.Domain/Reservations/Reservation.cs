@@ -2,9 +2,11 @@
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Common.Helpers;
 using RestaurantReservation.Domain.Reservations.Errors;
+using RestaurantReservation.Domain.Reservations.ValueObjects;
 using RestaurantReservation.Domain.Reservations.ValueObjects.CustomerValueObjects;
 using RestaurantReservation.Domain.Reservations.ValueObjects.ReservationValueObjects;
 using RestaurantReservation.Domain.Restaurants;
+using RestaurantReservation.Domain.Tables;
 using RestaurantReservation.Domain.Users;
 
 namespace RestaurantReservation.Domain.Reservations;
@@ -211,5 +213,14 @@ public class Reservation : BaseEntity
         return errors.Count > 0
             ? Result.Failure(errors)
             : Result.Success();
+    }
+
+    public void AddReservationTable(Guid tableId)
+    {
+        Tables.Add(new ReservationTable
+        {
+            ReservationId = Id,
+            TableId = tableId,
+        });
     }
 }

@@ -1,11 +1,12 @@
-﻿using RestaurantReservation.Domain.Tables;
+﻿using RestaurantReservation.Domain.Reservations.ValueObjects;
+using RestaurantReservation.Domain.Tables;
 
 namespace RestaurantReservation.Domain.Reservations;
 
 public class ReservationTable
 {
-    private Guid ReservationId { get; set; }
+    public Guid ReservationId { get; set; }
     public Reservation? Reservation { get; set; }
-    private Guid TableId { get; set; }
-    public RestaurantTable? Table { get; set; }
+    public Guid TableId { get; set; }
+    public Table? Table { get; set; }
 }

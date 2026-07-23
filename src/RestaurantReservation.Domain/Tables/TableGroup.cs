@@ -26,7 +26,7 @@ public class TableGroup : BaseEntity
             name);
     }
 
-    public void AddTables(List<RestaurantTable> tables)
+    public void AddTables(List<Table> tables)
     {
         foreach (var table in tables)
         {
