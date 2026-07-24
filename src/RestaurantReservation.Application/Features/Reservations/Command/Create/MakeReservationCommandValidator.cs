@@ -10,22 +10,27 @@ public sealed partial class MakeReservationCommandValidator : AbstractValidator<
     {
         RuleFor(x => x.CustomerFirstName)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
             .WithMessage("{PropertyName} cannot exceed 50 characters");
 
         RuleFor(x => x.CustomerLastName)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
-            .WithMessage("{PropertyName} cannot exceed 50 chracters");
+            .WithMessage("{PropertyName} cannot exceed 50 characters");
 
         RuleFor(x => x.CustomerEmail)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
+            .WithMessage("{PropertyName} cannot exceed 50 characters")
             .EmailAddress()
             .WithMessage("{PropertyName} is not a valid email address");
 
         RuleFor(x => x.CustomerPhone)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .Must(IsValidTelephoneNumber)
             .WithMessage("{PropertyName} is not a valid telephone number");
 

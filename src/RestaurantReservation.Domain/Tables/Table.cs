@@ -1,6 +1,7 @@
 ﻿using RestaurantReservation.Domain.Abstractions;
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Reservations;
+using RestaurantReservation.Domain.Reservations.ValueObjects.ReservationValueObjects;
 using RestaurantReservation.Domain.Restaurants;
 
 namespace RestaurantReservation.Domain.Tables;
@@ -10,8 +11,7 @@ public class Table : BaseEntity
     public Guid RestaurantId { get; private set; }
     public Restaurant? Restaurant { get; set; }
     public int SeatsAtTable { get; internal set; }
-    public ICollection<TableReservation> ScheduledReservations { get; set; } = [];
-    public ICollection<TableGroupTable> TableGroups { get; set; } = [];
+    public ICollection<TableGroup> TableGroups { get; set; } = [];
     public ICollection<ReservationTable> Reservations {get; set;} = [];
     
     private Table() {}
@@ -38,8 +38,7 @@ public class Table : BaseEntity
         SeatsAtTable = seatsAtTable;
     }
 
-    public Result<TableReservation> ReserveTable(
-        int guestsInParty,
+    public Result<ReservationTable> ReserveTable(
         DateOnly reservationDate,
         TimeOnly startOfParty,
         TimeOnly endOfParty,
@@ -54,9 +53,20 @@ public class Table : BaseEntity
         {
             tableReservation.ReservationId = reservationId.Value;
         }
-        
-        ScheduledReservations.Add(tableReservation);
 
-        return Result.Success(tableReservation);
+        var reservationTable = new ReservationTable { TableId = Id, ScheduledReservation = tableReservation };
+        
+        Reservations.Add(reservationTable);
+
+        return Result.Success(reservationTable);
+    }
+
+    public Result<ReservationTable> UpdateTableReservation(
+        Guid reservationId,
+        DateOnly reservationDate,
+        TimeOnly reservationStartTime,
+        TimeOnly reservationEndTime)
+    {
+        throw new InvalidOperationException();
     }
 }

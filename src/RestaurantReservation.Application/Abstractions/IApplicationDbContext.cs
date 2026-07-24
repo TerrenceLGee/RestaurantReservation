@@ -14,7 +14,6 @@ public interface IApplicationDbContext
     DbSet<TableGroup> TableGroups { get; }
     DbSet<Reservation> Reservations { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
-    DbSet<TableGroupTable> TableGroupTables { get; }
     DbSet<ReservationTable> ReservationTables { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

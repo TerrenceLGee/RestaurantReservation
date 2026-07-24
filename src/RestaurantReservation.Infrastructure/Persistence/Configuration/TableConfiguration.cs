@@ -12,11 +12,6 @@ public class TableConfiguration : IEntityTypeConfiguration<Table>
         builder.ToTable("restaurant_tables");
         builder.HasKey(t => t.Id);
 
-        builder.OwnsMany(t => t.ScheduledReservations, s =>
-        {
-            s.ToJson();
-        });
-
         builder.HasOne(t => t.Restaurant)
             .WithMany(r => r.Tables)
             .HasForeignKey(t => t.RestaurantId)

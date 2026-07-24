@@ -19,7 +19,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TableGroup> TableGroups => Set<TableGroup>();
     public DbSet<Reservation> Reservations => Set<Reservation>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-    public DbSet<TableGroupTable> TableGroupTables => Set<TableGroupTable>();
     public DbSet<ReservationTable> ReservationTables => Set<ReservationTable>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

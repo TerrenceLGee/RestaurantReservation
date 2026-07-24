@@ -10,33 +10,39 @@ public partial class RegisterUserCommandValidator : AbstractValidator<RegisterUs
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
             .WithMessage("{PropertyName} cannot exceed 50 characters");
 
         RuleFor(x => x.LastName)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
             .WithMessage("{PropertyName} cannot exceed 50 characters");
 
         RuleFor(x => x.EmailAddress)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MaximumLength(50)
             .EmailAddress()
             .WithMessage("{PropertyName} is not in a valid format");
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .Must(IsValidTelephoneNumber)
             .WithMessage("{PropertyName} is not in a valid telephone number format");
 
         RuleFor(x => x.Password)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MinimumLength(8)
             .Must(IsValidPassword)
             .WithMessage("{PropertyName} is not a valid password");
 
         RuleFor(x => x.ConfirmPassword)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .Equal(x => x.Password)
             .WithMessage("Passwords do not match");
     }

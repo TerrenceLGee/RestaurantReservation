@@ -1,4 +1,4 @@
-﻿namespace RestaurantReservation.Domain.Tables;
+﻿namespace RestaurantReservation.Domain.Reservations.ValueObjects.ReservationValueObjects;
 
 public record TableReservation(DateOnly ReservationDay, TimeOnly ReservationStart, TimeOnly ReservationEnd)
 {

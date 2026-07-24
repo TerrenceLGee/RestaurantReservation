@@ -8,7 +8,7 @@ public class TableGroup : BaseEntity
     public string Name { get; private set; }
     public Guid RestaurantId { get; private set; }
     public Restaurant? Restaurant { get; set; }
-    public ICollection<TableGroupTable> Tables { get; private set; } = [];
+    public ICollection<Table> Tables { get; private set; } = [];
     
     private TableGroup() {}
 
@@ -36,13 +36,9 @@ public class TableGroup : BaseEntity
                     "You cannot add a table to a group unless they are in the same restaurant");
             }
 
-            if (Tables.All(t => t.TableId != table.Id))
+            if (Tables.All(t => t.Id != table.Id))
             {
-                Tables.Add(new TableGroupTable
-                {
-                    TableId = table.Id,
-                    TableGroupId = Id
-                });
+                Tables.Add(table);
             }
         }
     }

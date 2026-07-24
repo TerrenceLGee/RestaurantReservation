@@ -2,11 +2,9 @@
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Common.Helpers;
 using RestaurantReservation.Domain.Reservations.Errors;
-using RestaurantReservation.Domain.Reservations.ValueObjects;
 using RestaurantReservation.Domain.Reservations.ValueObjects.CustomerValueObjects;
 using RestaurantReservation.Domain.Reservations.ValueObjects.ReservationValueObjects;
 using RestaurantReservation.Domain.Restaurants;
-using RestaurantReservation.Domain.Tables;
 using RestaurantReservation.Domain.Users;
 
 namespace RestaurantReservation.Domain.Reservations;
@@ -121,7 +119,7 @@ public class Reservation : BaseEntity
         return Result.Success();
     }
 
-    public Result UpdateReservationInfo(
+    public Result RescheduleReservation(
         DateOnly reservationDate,
         TimeOnly reservationStartTime,
         TimeOnly reservationEndTime,
@@ -215,12 +213,8 @@ public class Reservation : BaseEntity
             : Result.Success();
     }
 
-    public void AddReservationTable(Guid tableId)
+    public void AddReservationTable(ReservationTable table)
     {
-        Tables.Add(new ReservationTable
-        {
-            ReservationId = Id,
-            TableId = tableId,
-        });
+        Tables.Add(table);
     }
 }

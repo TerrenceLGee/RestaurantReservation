@@ -8,11 +8,13 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .EmailAddress()
             .WithMessage("{PropertyName} is not a valid email address.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
+            .WithMessage("{PropertyName} cannot be empty")
             .MinimumLength(8)
             .WithMessage("Password must be at least 8 characters long.");
     }

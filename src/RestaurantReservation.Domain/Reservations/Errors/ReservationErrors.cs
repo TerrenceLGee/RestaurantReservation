@@ -14,9 +14,9 @@ public static class ReservationErrors
         $"Cannot complete reservation with status: {status.ToString()}",
         ErrorType.Validation);
 
-    public static DomainError ReservationNotFound(string customerId, Guid restaurantId) => new(
+    public static DomainError ReservationNotFound(string customerEmail, string restaurantName) => new(
         "Reservation.NotFound",
-        $"Reservation for customer with id {customerId} at restaurant with id {restaurantId} not found",
+        $"Reservation for {customerEmail} at {restaurantName} not found",
         ErrorType.NotFound);
 
     public static readonly DomainError ReservationOverlap = new(
@@ -28,4 +28,9 @@ public static class ReservationErrors
         "Reservation.CannotBeRescheduled",
         "Unable to reschedule your reservation",
         ErrorType.BadRequest);
+
+    public static readonly DomainError UnableToSecureTablesForReservation = new(
+        "Reservation.UnableToSecureTableForReservation",
+        "There were no tables available that would fit your party size",
+        ErrorType.NotFound);
 }
