@@ -10,6 +10,7 @@ public class ReservationTable
     public Guid TableId { get; set; }
     public Table? Table { get; set; }
     public TableReservation ScheduledReservation { get; set; }
+    public int SeatsAtTable { get; set; }
 
     public void UpdateReservation(TableReservation updatedReservation)
     {

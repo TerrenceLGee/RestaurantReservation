@@ -19,6 +19,11 @@ public static class ReservationErrors
         $"Reservation for {customerEmail} at {restaurantName} not found",
         ErrorType.NotFound);
 
+    public static DomainError ReservationNotFound(string customerEmail) => new(
+        "Reservation.NotFound",
+        $"Reservation for {customerEmail} not found",
+        ErrorType.NotFound);
+
     public static readonly DomainError ReservationOverlap = new(
         "Reservation.Overlap",
         "This reservation overlaps with an already existing reservation",

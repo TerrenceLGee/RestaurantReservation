@@ -3,7 +3,7 @@
 using RestaurantReservation.Application.Features.Reservations.Query.Responses;
 using RestaurantReservation.Domain.Common;
 
-namespace RestaurantReservation.Application.Features.Reservations.Command.Create;
+namespace RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 
 public record MakeReservationCommand(
     string RestaurantName,

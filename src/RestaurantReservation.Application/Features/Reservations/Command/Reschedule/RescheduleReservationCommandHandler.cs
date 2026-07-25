@@ -5,6 +5,8 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 using RestaurantReservation.Application.Abstractions;
+using RestaurantReservation.Application.Features.Constants;
+using RestaurantReservation.Application.Features.Reservations.Query.Mappings;
 using RestaurantReservation.Application.Features.Reservations.Query.Responses;
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Reservations;
@@ -14,26 +16,42 @@ using RestaurantReservation.Domain.Users.Errors;
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Reschedule;
 
-public class RescheduleReservationCommandHandler(
+public sealed class RescheduleReservationCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ICurrentUser currentUser,
-    ILogger<RescheduleReservationCommandHandler> logger) : IRequestHandler<RescheduleReservationCommand, Result<ReservationDetailResponse>>
+    ILogger<RescheduleReservationCommandHandler> logger) : IRequestHandler<RescheduleReservationCommand, Result<RescheduledReservationDetailResponse>>
 {
-    public async Task<Result<ReservationDetailResponse>> Handle(
+    public async Task<Result<RescheduledReservationDetailResponse>> Handle(
         RescheduleReservationCommand command, 
         CancellationToken cancellationToken)
     {
         var customerId = currentUser.UserId;
         var customerEmail = currentUser.Email ?? "customer";
-        ReservationTable? reservationTable = null;
         List<ReservationTable> reservationTables = [];
 
         if (string.IsNullOrWhiteSpace(customerId))
         {
             logger.LogError("Customer that is trying to reschedule a reservation in the system is not found");
-            return Result.Failure<ReservationDetailResponse>(UserErrors.UserNotFound);
+            return Result.Failure<RescheduledReservationDetailResponse>(UserErrors.UserNotFound);
         }
+        
+        var reservationToReschedule = await context.Reservations
+            .Include(r => r.Tables)
+            .FirstOrDefaultAsync(r => r.Id == command.ReservationId, cancellationToken);
+
+        if (reservationToReschedule is null)
+        {
+            logger.LogWarning("Unable to retrieve reservation {Id}, reservation for {Email} not rescheduled", 
+                command.ReservationId,
+                customerEmail);
+            return Result.Failure<RescheduledReservationDetailResponse>(
+                ReservationErrors.ReservationNotFound(customerEmail, command.RestaurantName));
+        }
+
+        var originalReservationDate = reservationToReschedule.ReservationInfo.Date.Value;
+        var originalReservationStartTime = reservationToReschedule.ReservationInfo.StartTime.Value;
+        var originalReservationEndTime = reservationToReschedule.ReservationInfo.EndTime.Value;
 
         var restaurant = await context.Restaurants
             .AsNoTracking()
@@ -44,7 +62,7 @@ public class RescheduleReservationCommandHandler(
         {
             logger.LogWarning("Restaurant {Name} not found in the system, cannot reschedule reservation",
                 command.RestaurantName);
-            return Result.Failure<ReservationDetailResponse>(RestaurantErrors.NotFound(command.RestaurantName));
+            return Result.Failure<RescheduledReservationDetailResponse>(RestaurantErrors.NotFound(command.RestaurantName));
         }
 
         var isOpenResult = restaurant.RestaurantIsOpen(
@@ -57,7 +75,7 @@ public class RescheduleReservationCommandHandler(
             logger.LogWarning("Restaurant {Name} is not opened at the time {Email} wishes to reschedule their reservation, so no reservation was rescheduled",
                 command.RestaurantName,
                 customerEmail);
-            return Result.Failure<ReservationDetailResponse>(
+            return Result.Failure<RescheduledReservationDetailResponse>(
                 RestaurantErrors.RestaurantClosedToday(restaurant.Name, command.RescheduleDate));
         }
 
@@ -88,50 +106,39 @@ public class RescheduleReservationCommandHandler(
                 logger.LogWarning("Unable to find any tables with enough capacity to accommodate the customer's party size of {Party}, " +
                                   "unable to reschedule reservation",
                     command.RescheduleNumberOfGuests);
-                return Result.Failure<ReservationDetailResponse>(ReservationErrors.UnableToSecureTablesForReservation);
+                return Result.Failure<RescheduledReservationDetailResponse>(ReservationErrors.UnableToSecureTablesForReservation);
             }
 
             foreach (var table in tableGroupToReserve.Tables)
             {
-                var result = table.ReserveTable(
+                var result = table.UpdateTableReservation(
+                    reservationToReschedule.Id,
                     command.RescheduleDate,
                     command.RescheduleStartTime,
                     command.RescheduleEndTime);
 
                 if (result.IsFailure)
                 {
-                    return Result.Failure<ReservationDetailResponse>(result.Error);
+                    return Result.Failure<RescheduledReservationDetailResponse>(result.Error);
                 }
 
-                reservationTables.Add(result.Value);
+                reservationTables = result.Value;
             }
         }
         else
         {
-            var result = tableToReserve.ReserveTable(
+            var result = tableToReserve.UpdateTableReservation(
+                reservationToReschedule.Id,
                 command.RescheduleDate,
                 command.RescheduleStartTime,
                 command.RescheduleEndTime);
 
             if (result.IsFailure)
             {
-                return Result.Failure<ReservationDetailResponse>(result.Error);
+                return Result.Failure<RescheduledReservationDetailResponse>(result.Error);
             }
 
-            reservationTable = result.Value;
-        }
-
-        var reservationToReschedule = await context.Reservations
-            .Include(r => r.Tables)
-            .FirstOrDefaultAsync(r => r.Id == command.ReservationId, cancellationToken);
-
-        if (reservationToReschedule is null)
-        {
-            logger.LogWarning("Unable to retrieve reservation {Id}, reservation for {Email} not rescheduled", 
-                command.ReservationId,
-                customerEmail);
-            return Result.Failure<ReservationDetailResponse>(
-                ReservationErrors.ReservationNotFound(customerEmail, restaurant.Name));
+            reservationTables = result.Value;
         }
 
         var rescheduledReservationResult = reservationToReschedule.RescheduleReservation(
@@ -145,9 +152,41 @@ public class RescheduleReservationCommandHandler(
             logger.LogError("Unable to reschedule reservation for {Email} at {RName}",
                 customerEmail,
                 restaurant.Name);
-            return Result.Failure<ReservationDetailResponse>(ReservationErrors.ReservationCannotBeRescheduled);
+            return Result.Failure<RescheduledReservationDetailResponse>(ReservationErrors.ReservationCannotBeRescheduled);
         }
+
+        var updateReservationTablesResult = reservationToReschedule.RemoveReservationTable();
+
+        if (updateReservationTablesResult.IsFailure)
+        {
+            logger.LogError("Unable to reschedule reservation for {Email} at {RName}",
+                customerEmail,
+                restaurant.Name);
+            return Result.Failure<RescheduledReservationDetailResponse>(updateReservationTablesResult.Error);
+        }
+
+        foreach (var table in reservationTables)
+        {
+            reservationToReschedule.AddReservationTable(table);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
         
-        throw new InvalidOperationException();
+        logger.LogError("{Email} just updated a reservation. Invaliding the cache for key: {Key} and {TKey} and {TGKey}",
+            customerEmail,
+            Keys.Reservations,
+            Keys.Tables,
+            Keys.TableGroups);
+
+        await cache.RemoveByTagAsync(Keys.Reservations, cancellationToken);
+        await cache.RemoveByTagAsync(Keys.Tables, cancellationToken);
+        await cache.RemoveByTagAsync(Keys.TableGroups, cancellationToken);
+
+        var response = reservationToReschedule.ToRescheduledDetailResponse(
+            originalReservationDate,
+            originalReservationStartTime,
+            originalReservationEndTime);
+
+        return Result.Success(response);
     }
 }

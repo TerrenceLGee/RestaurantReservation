@@ -3,6 +3,7 @@ using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Reservations;
 using RestaurantReservation.Domain.Reservations.ValueObjects.ReservationValueObjects;
 using RestaurantReservation.Domain.Restaurants;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Domain.Tables;
 
@@ -54,19 +55,36 @@ public class Table : BaseEntity
             tableReservation.ReservationId = reservationId.Value;
         }
 
-        var reservationTable = new ReservationTable { TableId = Id, ScheduledReservation = tableReservation };
+        var reservationTable = new ReservationTable { TableId = Id, ScheduledReservation = tableReservation, SeatsAtTable = SeatsAtTable};
         
         Reservations.Add(reservationTable);
 
         return Result.Success(reservationTable);
     }
 
-    public Result<ReservationTable> UpdateTableReservation(
+    public Result<List<ReservationTable>> UpdateTableReservation(
         Guid reservationId,
-        DateOnly reservationDate,
+        DateOnly reservationDay,
         TimeOnly reservationStartTime,
         TimeOnly reservationEndTime)
     {
-        throw new InvalidOperationException();
+        var reservationTablesToUpdate = Reservations.Where(r => r.ReservationId == reservationId)
+            .ToList();
+        if (reservationTablesToUpdate.Count == 0)
+        {
+            return Result.Failure<List<ReservationTable>>(TableErrors.TableCannotBeReserved);
+        }
+
+        var updatedReservation = new TableReservation(
+            reservationDay,
+            reservationStartTime,
+            reservationEndTime) { ReservationId = reservationId };
+
+        foreach (var table in reservationTablesToUpdate)
+        {
+            table.UpdateReservation(updatedReservation);
+        }
+
+        return reservationTablesToUpdate;
     }
 }

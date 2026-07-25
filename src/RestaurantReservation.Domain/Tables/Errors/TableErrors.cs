@@ -18,4 +18,9 @@ public static class TableErrors
         "Table.CannotBeReserved",
         "This table is not available for a reservation at this time",
         ErrorType.NotFound);
+
+    public static readonly DomainError TableNotFreed = new(
+        "Table.NotFreed",
+        "Unable to free table(s) associated with this reservation",
+        ErrorType.InternalServerError);
 }

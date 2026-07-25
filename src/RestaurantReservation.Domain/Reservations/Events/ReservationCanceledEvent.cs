@@ -10,5 +10,4 @@ public record ReservationCanceledEvent(
     string RestaurantName,
     DateOnly ReservationDate,
     TimeOnly ReservationStartTime,
-    TimeOnly ReservationEndTime,
-    int NumberOfGuests) : INotification;
+    TimeOnly ReservationEndTime) : INotification;

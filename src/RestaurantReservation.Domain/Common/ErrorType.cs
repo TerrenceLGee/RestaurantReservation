@@ -6,6 +6,7 @@ public enum ErrorType
     CapacityExceeded,
     Conflict,
     Forbidden,
+    InternalServerError,
     None,
     NotFound,
     NullValue,

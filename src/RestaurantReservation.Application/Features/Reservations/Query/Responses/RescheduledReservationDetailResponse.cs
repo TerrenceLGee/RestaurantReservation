@@ -1,6 +1,6 @@
 ﻿namespace RestaurantReservation.Application.Features.Reservations.Query.Responses;
 
-public record ReservationDetailResponse(
+public record RescheduledReservationDetailResponse(
     Guid ReservationId,
     Guid RestaurantId,
     string RestaurantName,
@@ -8,12 +8,13 @@ public record ReservationDetailResponse(
     string CustomerLastName,
     string CustomerEmail,
     string CustomerPhoneNumber,
-    DateOnly ReservationDate,
-    TimeOnly ReservationStartTime,
-    TimeOnly ReservationEndTime,
+    DateOnly OriginalReservationDate,
+    TimeOnly OriginalReservationStartTime,
+    TimeOnly OriginalReservationEndTime,
+    DateOnly RescheduledReservationDate,
+    TimeOnly RescheduledReservationStartTime,
+    TimeOnly RescheduledReservationEndTime,
     DateTime ReservationCreatedAtUtc,
     DateTime? ReservationUpdatedAtUtc,
-    DateTime? ReservationCanceledAtUtc,
-    DateTime? ReservationCompletedAtUtc,
     int NumberOfGuests, 
     List<ReservationTableDetailResponse> TablesInReservation);

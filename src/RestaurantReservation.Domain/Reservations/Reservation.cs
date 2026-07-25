@@ -217,4 +217,22 @@ public class Reservation : BaseEntity
     {
         Tables.Add(table);
     }
+
+    public Result RemoveReservationTable()
+    {
+        var tablesToRemove = Tables.Where(t => t.ReservationId == Id)
+            .ToList();
+
+        if (tablesToRemove.Count == 0)
+        {
+            return Result.Failure(ReservationErrors.ReservationCannotBeRescheduled);
+        }
+
+        foreach (var table in tablesToRemove)
+        {
+            Tables.Remove(table);
+        }
+
+        return Result.Success();
+    }
 }

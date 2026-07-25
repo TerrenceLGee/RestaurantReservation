@@ -3,12 +3,11 @@
 namespace RestaurantReservation.Domain.Reservations.Events;
 
 public record ReservationCompletedEvent(
-    Guid RestaurantId,
+    Guid ReservationId,
     string FirstName,
     string LastName,
     string Email,
     string RestaurantName,
     DateOnly ReservationDate,
     TimeOnly ReservationStartTime,
-    TimeOnly ReservationEndTime,
-    int NumberOfGuests) : INotification;
+    TimeOnly ReservationEndTime) : INotification;

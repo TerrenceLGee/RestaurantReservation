@@ -14,7 +14,7 @@ using RestaurantReservation.Domain.Reservations.Errors;
 using RestaurantReservation.Domain.Restaurants.Errors;
 using RestaurantReservation.Domain.Users.Errors;
 
-namespace RestaurantReservation.Application.Features.Reservations.Command.Create;
+namespace RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 
 public sealed class MakeReservationCommandHandler(
     IApplicationDbContext context,
@@ -170,7 +170,7 @@ public sealed class MakeReservationCommandHandler(
         await cache.RemoveByTagAsync(Keys.Tables, cancellationToken);
         await cache.RemoveByTagAsync(Keys.TableGroups, cancellationToken);
 
-        var response = reservationResult.Value.ToDetailResponse(restaurant);
+        var response = reservationResult.Value.ToDetailResponse(restaurant.Name);
 
         return Result.Success(response);
     }

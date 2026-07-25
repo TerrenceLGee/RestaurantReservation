@@ -11,4 +11,4 @@ public record RescheduleReservationCommand(
     DateOnly RescheduleDate,
     TimeOnly RescheduleStartTime,
     TimeOnly RescheduleEndTime,
-    int RescheduleNumberOfGuests) : IRequest<Result<ReservationDetailResponse>>;
+    int RescheduleNumberOfGuests) : IRequest<Result<RescheduledReservationDetailResponse>>;
