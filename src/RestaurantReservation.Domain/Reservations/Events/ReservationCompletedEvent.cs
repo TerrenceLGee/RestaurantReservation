@@ -10,4 +10,5 @@ public record ReservationCompletedEvent(
     string RestaurantName,
     DateOnly ReservationDate,
     TimeOnly ReservationStartTime,
-    TimeOnly ReservationEndTime) : INotification;
+    TimeOnly ReservationEndTime,
+    DateTime ReservationCompletedAtUtc) : INotification;

@@ -15,6 +15,13 @@
     <PackageReference Include="System.Linq.Dynamic.Core" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Restaurants\TableGroups\Command\Add\" />
+    <Folder Include="Features\Restaurants\TableGroups\Query\" />
+    <Folder Include="Features\Restaurants\Tables\Command\" />
+    <Folder Include="Features\Restaurants\Tables\Query\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

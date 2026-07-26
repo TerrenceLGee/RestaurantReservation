@@ -23,4 +23,19 @@ public static class TableErrors
         "Table.NotFreed",
         "Unable to free table(s) associated with this reservation",
         ErrorType.InternalServerError);
+
+    public static readonly DomainError TableNotFound = new(
+        "Table.NotFound",
+        "Table not found",
+        ErrorType.NotFound);
+
+    public static DomainError TableGroupNotFound(string groupName) => new(
+        "TableGroup.NotFound",
+        $"There was no table group with the name {groupName} found, cannot add table",
+        ErrorType.NotFound);
+
+    public static DomainError TableAlreadyInTableGroup(string groupName) => new(
+        "Table.AlreadyInTableGroup",
+        $"Table is already in table group {groupName}",
+        ErrorType.Conflict);
 }

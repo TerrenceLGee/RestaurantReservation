@@ -8,29 +8,28 @@ using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;
 
-public class ReservationCompletedEventHandler(
+public class ReservationCanceledEventHandler(
     IEmailService emailService,
-    ILogger<ReservationCompletedEventHandler> logger) : INotificationHandler<ReservationCompletedEvent>
+    ILogger<ReservationCanceledEventHandler> logger) : INotificationHandler<ReservationCanceledEvent>
 {
     public async Task Handle(
-        ReservationCompletedEvent notification, 
+        ReservationCanceledEvent notification, 
         CancellationToken cancellationToken)
     {
         logger.LogInformation("Reservation {Id} scheduled for Customer {Email} " +
-                              "on {Date} starting at {Start} and ending at {End} has been marked as completed on {CompletionDate}",
+                              "on {Date} starting at {Start} and ending at {End} has been canceled on {CancellationDate}",
             notification.ReservationId,
             notification.Email,
             notification.ReservationDate,
             notification.ReservationStartTime,
             notification.ReservationEndTime,
-            notification.ReservationCompletedAtUtc);
+            notification.ReservationCanceledAtUtc);
 
         var body = $"Your reservation at {notification.RestaurantName} on {notification.ReservationDate} from " +
-                   $"{notification.ReservationStartTime} to {notification.ReservationEndTime} has been marked as" +
-                   $" completed on {notification.ReservationCompletedAtUtc:F}. We hope that you enjoyed your " +
-                   $"time at {notification.RestaurantName} and will visit again soon!";
+                   $"{notification.ReservationStartTime} to {notification.ReservationEndTime} has been canceled as per your request " +
+                   $"on {notification.ReservationCanceledAtUtc}. No further action is necessary on your part.";
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Reservation Completed";
+        var subject = "Reservation Canceled";
 
         var emailInfo = new EmailInfo(
             name,

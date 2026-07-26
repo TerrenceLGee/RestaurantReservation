@@ -30,16 +30,28 @@ public class TableGroup : BaseEntity
     {
         foreach (var table in tables)
         {
-            if (table.RestaurantId != RestaurantId)
-            {
-                throw new InvalidOperationException(
-                    "You cannot add a table to a group unless they are in the same restaurant");
-            }
+            AddTable(table);
+        }
+    }
 
-            if (Tables.All(t => t.Id != table.Id))
-            {
-                Tables.Add(table);
-            }
+    public void RemoveTable(Table table)
+    {
+        Tables.Remove(table);
+    }
+
+    public void AddTable(Table table)
+    {
+        if (table.RestaurantId != RestaurantId)
+        {
+            throw new InvalidOperationException(
+                "You cannot add a table to a group unless they are in the same restaurant");
+        }
+
+        if (Tables.All(t => t.Id != table.Id))
+        {
+            table.IsInTableGroup = true;
+            table.TableGroupName = Name;
+            Tables.Add(table);
         }
     }
 }

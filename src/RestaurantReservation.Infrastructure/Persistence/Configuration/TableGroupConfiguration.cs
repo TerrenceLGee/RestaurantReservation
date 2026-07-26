@@ -14,6 +14,7 @@ public class TableGroupConfiguration : IEntityTypeConfiguration<TableGroup>
 
         builder.HasOne(tg => tg.Restaurant)
             .WithMany(r => r.TableGroups)
-            .HasForeignKey(tg => tg.RestaurantId);
+            .HasForeignKey(tg => tg.RestaurantId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

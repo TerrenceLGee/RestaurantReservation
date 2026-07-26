@@ -4,6 +4,7 @@ using RestaurantReservation.Domain.Common.Helpers;
 using RestaurantReservation.Domain.Reservations;
 using RestaurantReservation.Domain.Restaurants.Errors;
 using RestaurantReservation.Domain.Tables;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Domain.Restaurants;
 
@@ -81,10 +82,24 @@ public class Restaurant : BaseEntity
         return Result.Success();
     }
 
-    public void AddTable(int seats)
+    public Table AddTable(int seats)
     {
         var table = Table.Create(Id, seats);
         Tables.Add(table);
+        return table;
+    }
+
+    public Result AddTableToTableGroup(Table table, string groupName)
+    {
+        var tableGroup = TableGroups.FirstOrDefault(tg => tg.Name.ToLower().Equals(groupName.ToLower()));
+
+        if (tableGroup is null)
+        {
+            return Result.Failure(TableErrors.TableGroupNotFound(groupName));
+        }
+        
+        tableGroup.AddTables([table]);
+        return Result.Success();
     }
 
     public void AddTableGroup(string name, List<Table> tables)

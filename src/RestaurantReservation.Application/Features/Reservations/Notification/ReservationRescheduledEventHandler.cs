@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Logging;
 
 using RestaurantReservation.Application.Abstractions;
+using RestaurantReservation.Application.Features.Reservations.Notification.Constants;
 using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;
@@ -37,7 +38,7 @@ public class ReservationRescheduledEventHandler(
         var emailInfo = new EmailInfo(
             name,
             notification.Email,
-            "restaurant-reservation@example.com",
+            NotificationConstants.EmailSender,
             subject,
             body);
 

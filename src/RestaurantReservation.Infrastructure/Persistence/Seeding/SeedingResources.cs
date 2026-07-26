@@ -80,13 +80,13 @@ public static class SeedingResources
         AddTablesToRestaurant(restaurant5, 57);
         AddTablesToRestaurant(restaurant6, 30);
 
-        var restaraunt1TableGroupInfo = new Dictionary<int, string?>
+        var restaurant1TableGroupInfo = new Dictionary<int, string?>
         {
             { 20, null }, 
             { 15, "Main Dining Room" }, 
             { 10, null }
         };
-        AddTablesToTableGroup(restaurant1, restaraunt1TableGroupInfo);
+        AddTablesToTableGroup(restaurant1, restaurant1TableGroupInfo);
 
         var restaurant2TableGroupInfo = new Dictionary<int, string?>
         {
@@ -109,13 +109,13 @@ public static class SeedingResources
         };
         AddTablesToTableGroup(restaurant4, restaurant4TableGroupInfo);
 
-        var restarant5TableGroupInfo = new Dictionary<int, string?>
+        var restaurant5TableGroupInfo = new Dictionary<int, string?>
         {
             { 30, null }, 
             { 15, "VIP Room" }, 
             { 12, null }
         };
-        AddTablesToTableGroup(restaurant5, restarant5TableGroupInfo);
+        AddTablesToTableGroup(restaurant5, restaurant5TableGroupInfo);
 
         var restaurant6TableGroupInfo = new Dictionary<int, string?>
         {

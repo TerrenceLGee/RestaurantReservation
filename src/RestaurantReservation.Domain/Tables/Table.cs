@@ -12,6 +12,8 @@ public class Table : BaseEntity
     public Guid RestaurantId { get; private set; }
     public Restaurant? Restaurant { get; set; }
     public int SeatsAtTable { get; internal set; }
+    public bool IsInTableGroup { get; set; }
+    public string? TableGroupName { get; set; }
     public ICollection<TableGroup> TableGroups { get; set; } = [];
     public ICollection<ReservationTable> Reservations {get; set;} = [];
     
