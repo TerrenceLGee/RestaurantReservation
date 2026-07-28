@@ -12,7 +12,7 @@ using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Command.Delete;
 
-public class DeleteTableCommandHandler(
+public sealed class DeleteTableCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<DeleteTableCommandHandler> logger) : IRequestHandler<DeleteTableCommand, Result>

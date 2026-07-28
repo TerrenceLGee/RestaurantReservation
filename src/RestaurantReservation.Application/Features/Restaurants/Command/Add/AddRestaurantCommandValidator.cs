@@ -4,7 +4,7 @@ using RestaurantReservation.Domain.Restaurants;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Command.Add;
 
-public sealed class AddRestaurantCommandValidator : AbstractValidator<AddRestaurantCommand>
+internal sealed class AddRestaurantCommandValidator : AbstractValidator<AddRestaurantCommand>
 {
     public AddRestaurantCommandValidator()
     {

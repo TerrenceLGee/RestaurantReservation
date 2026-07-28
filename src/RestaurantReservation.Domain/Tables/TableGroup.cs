@@ -26,6 +26,13 @@ public class TableGroup : BaseEntity
             name);
     }
 
+    public void Update(string? name = null, List<Table>? tables = null)
+    {
+        if (!string.IsNullOrEmpty(name)) Name = name;
+        
+        if (tables is not null) AddTables(tables); 
+    }
+
     public void AddTables(List<Table> tables)
     {
         foreach (var table in tables)
@@ -37,6 +44,17 @@ public class TableGroup : BaseEntity
     public void RemoveTable(Table table)
     {
         Tables.Remove(table);
+    }
+
+    public void RemoveTables()
+    {
+        foreach (var table in Tables)
+        {
+            table.IsInTableGroup = false;
+            table.TableGroupName = null;
+        }
+        
+        Tables.Clear();
     }
 
     public void AddTable(Table table)

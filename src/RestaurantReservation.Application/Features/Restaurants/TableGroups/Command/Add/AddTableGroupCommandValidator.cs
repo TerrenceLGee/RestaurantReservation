@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Add;
 
-public class AddTableGroupCommandValidator : AbstractValidator<AddTableGroupCommand>
+internal class AddTableGroupCommandValidator : AbstractValidator<AddTableGroupCommand>
 {
     public AddTableGroupCommandValidator()
     {

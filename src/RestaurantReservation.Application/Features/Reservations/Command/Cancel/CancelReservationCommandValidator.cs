@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Cancel;
 
-public sealed class CancelReservationCommandValidator : AbstractValidator<CancelReservationCommand>
+internal sealed class CancelReservationCommandValidator : AbstractValidator<CancelReservationCommand>
 {
     public CancelReservationCommandValidator()
     {

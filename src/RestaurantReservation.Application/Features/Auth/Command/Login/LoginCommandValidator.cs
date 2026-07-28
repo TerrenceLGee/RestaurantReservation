@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Auth.Command.Login;
 
-public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
+internal sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator()
     {

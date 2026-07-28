@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -8,28 +8,27 @@ using RestaurantReservation.Application.Abstractions;
 using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Restaurants.Errors;
-using RestaurantReservation.Domain.Tables;
 using RestaurantReservation.Domain.Tables.Errors;
 
-namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Update;
+namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Delete;
 
-public sealed class UpdateTableGroupCommandHandler(
+public sealed class DeleteTableGroupCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
-    ILogger<UpdateTableGroupCommandHandler> logger) : IRequestHandler<UpdateTableGroupCommand, Result>
+    ILogger<DeleteTableGroupCommandHandler> logger) : IRequestHandler<DeleteTableGroupCommand, Result>
 {
     public async Task<Result> Handle(
-        UpdateTableGroupCommand command, 
+        DeleteTableGroupCommand command, 
         CancellationToken cancellationToken)
     {
         var restaurant = await context.Restaurants
-            .Include(r => r.Tables)
-            .Include(r => r.TableGroups)
+            .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == command.RestaurantId, cancellationToken);
 
         if (restaurant is null)
         {
-            logger.LogWarning("Restaurant with Id {Id} not found, unable to update table group", command.RestaurantId);
+            logger.LogWarning("Restaurant with id {Id} not found, unable to delete table group",
+                command.RestaurantId);
             return Result.Failure(RestaurantErrors.NotFound());
         }
 
@@ -40,30 +39,19 @@ public sealed class UpdateTableGroupCommandHandler(
 
         if (tableGroup is null)
         {
-            logger.LogInformation("Table group {GName} not found for {RName}, unable to update table group", 
-                command.GroupName,
+            logger.LogWarning("Table group with id {Id} not found in {RName}, unable to delete table group",
+                command.Id,
                 restaurant.Name);
             return Result.Failure(TableErrors.TableGroupNotFound());
         }
-
-        List<Table>? tables = null;
         
-        if (command.NumberOfTables.HasValue && command.SeatsAtTable.HasValue)
-        {
-            tables = new List<Table>();
-            for (int i = 0; i < command.NumberOfTables.Value; i++)
-            {
-                tables.Add(restaurant.AddTable(command.SeatsAtTable.Value));
-            }
-        }
-        
-        tableGroup.Update(command.GroupName, tables);
+        tableGroup.RemoveTables();
 
         await context.SaveChangesAsync(cancellationToken);
         
-        logger.LogInformation("Table group with Id {GId} was updated in {RName}, invalidating cache for " +
+        logger.LogInformation("Table group {GName} has been removed from {RName}. Invalidating cache for keys: " +
                               "{RKey}, {TGKey} and {TKey}",
-            command.Id,
+            tableGroup.Name,
             restaurant.Name,
             Keys.Restaurants,
             Keys.TableGroups,

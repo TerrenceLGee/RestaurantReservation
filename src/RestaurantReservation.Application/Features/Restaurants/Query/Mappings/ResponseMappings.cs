@@ -14,6 +14,19 @@ public static class ResponseMappings
             restaurant.Schedule.ToScheduleResponseCollection(),
             restaurant.Tables.ToTableResponseCollection());
     }
+
+    public static RestaurantResponse ToResponse(this Restaurant restaurant)
+    {
+        return new RestaurantResponse(
+            restaurant.Id,
+            restaurant.Name,
+            restaurant.Tables.Count);
+    }
+
+    public static List<RestaurantResponse> ToResponseCollection(IEnumerable<Restaurant> restaurants)
+    {
+        return [.. restaurants.Select(r => r.ToResponse())];
+    }
     
     public static List<RestaurantScheduleResponse> ToScheduleResponseCollection(
         this IEnumerable<RestaurantSchedule> schedules)

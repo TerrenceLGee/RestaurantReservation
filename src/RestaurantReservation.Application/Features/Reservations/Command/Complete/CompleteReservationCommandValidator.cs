@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Complete;
 
-public sealed class CompleteReservationCommandValidator : AbstractValidator<CompleteReservationCommand>
+internal sealed class CompleteReservationCommandValidator : AbstractValidator<CompleteReservationCommand>
 {
     public CompleteReservationCommandValidator()
     {

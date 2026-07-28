@@ -4,7 +4,7 @@ using RestaurantReservation.Domain.Restaurants;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Command.Update;
 
-public sealed class UpdateRestaurantCommandValidator : AbstractValidator<UpdateRestaurantCommand>
+internal sealed class UpdateRestaurantCommandValidator : AbstractValidator<UpdateRestaurantCommand>
 {
     public UpdateRestaurantCommandValidator()
     {

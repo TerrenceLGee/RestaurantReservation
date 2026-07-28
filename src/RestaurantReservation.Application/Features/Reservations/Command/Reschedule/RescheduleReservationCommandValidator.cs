@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Reschedule;
 
-public sealed class RescheduleReservationCommandValidator : AbstractValidator<RescheduleReservationCommand>
+internal sealed class RescheduleReservationCommandValidator : AbstractValidator<RescheduleReservationCommand>
 {
     public RescheduleReservationCommandValidator()
     {

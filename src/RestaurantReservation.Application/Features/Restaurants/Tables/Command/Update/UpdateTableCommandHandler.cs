@@ -12,7 +12,7 @@ using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Command.Update;
 
-public class UpdateTableCommandHandler(
+public sealed class UpdateTableCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<UpdateTableCommandHandler> logger) : IRequestHandler<UpdateTableCommand, Result>

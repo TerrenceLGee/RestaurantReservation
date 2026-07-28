@@ -14,7 +14,7 @@ using RestaurantReservation.Domain.Tables;
 
 namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Add;
 
-public class AddTableGroupCommandHandler(
+public sealed class AddTableGroupCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<AddTableGroupCommandHandler> logger) : IRequestHandler<AddTableGroupCommand, Result<TableGroupDetailResponse>>

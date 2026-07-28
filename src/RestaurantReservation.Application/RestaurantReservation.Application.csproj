@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Restaurants\Tables\Command\" />
-    <Folder Include="Features\Restaurants\Tables\Query\" />
   </ItemGroup>
 
   <PropertyGroup>

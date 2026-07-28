@@ -14,7 +14,7 @@ using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Command.Add;
 
-public class AddTableCommandHandler(
+public sealed class AddTableCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<AddTableCommandHandler> logger) : IRequestHandler<AddTableCommand, Result<RestaurantTableResponse>>
