@@ -14,33 +14,33 @@ public sealed class RegisterUserCommandHandler(
     ILogger<RegisterUserCommandHandler> logger) : IRequestHandler<RegisterUserCommand, Result>
 {
     public async Task<Result> Handle(
-        RegisterUserCommand request, 
+        RegisterUserCommand command, 
         CancellationToken cancellationToken)
     {
         var existingUser = await userManager
-            .FindByEmailAsync(request.EmailAddress);
+            .FindByEmailAsync(command.EmailAddress);
 
         if (existingUser is not null)
         {
             logger.LogWarning("An attempt was made to register a new account with email: {Email}. This email is already registered with an account in the system",
-                request.EmailAddress);
-            return Result.Failure(RegistrationErrors.EmailAlreadyInUse(request.EmailAddress));
+                command.EmailAddress);
+            return Result.Failure(RegistrationErrors.EmailAlreadyInUse(command.EmailAddress));
         }
 
         var userToAdd = new ApplicationUser
         {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            PhoneNumber = request.PhoneNumber,
-            Email = request.EmailAddress,
-            UserName = request.EmailAddress,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            PhoneNumber = command.PhoneNumber,
+            Email = command.EmailAddress,
+            UserName = command.EmailAddress,
             RegistrationDate = new DateOnly(
                 DateTime.Now.Year,
                 DateTime.Now.Month,
                 DateTime.Now.Day)
         };
 
-        var userAddedResult = await userManager.CreateAsync(userToAdd, request.Password);
+        var userAddedResult = await userManager.CreateAsync(userToAdd, command.Password);
 
         if (!userAddedResult.Succeeded)
         {
@@ -50,7 +50,7 @@ public sealed class RegisterUserCommandHandler(
                     ErrorType.BadRequest))
                 .ToList();
             logger.LogError("Unable to add user {Email}: {FirstError}",
-                request.EmailAddress,
+                command.EmailAddress,
                 errors[0].Description);
 
             return Result.Failure(errors);
@@ -66,7 +66,7 @@ public sealed class RegisterUserCommandHandler(
                     ErrorType.BadRequest))
                 .ToList();
             logger.LogError("Unable to add user {Email} to the {Role} role: {FirstError}",
-                request.EmailAddress,
+                command.EmailAddress,
                 Roles.Customer,
                 errors[0].Description);
 

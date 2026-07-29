@@ -16,7 +16,7 @@ public static class UserAndRoleSeeder
 
     private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
-        foreach (var role in new[] { Roles.Admin, Roles.Manager, Roles.Customer })
+        foreach (var role in new[] { Roles.Admin, Roles.Customer })
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
@@ -33,16 +33,7 @@ public static class UserAndRoleSeeder
             LastName = "Ramsay",
             Email = "admin@example.com",
             Password = "Pa$$w0rd",
-            Roles = new[] { Roles.Admin, Roles.Manager }
-        };
-
-        var manager = new
-        {
-            FirstName = "Mary",
-            LastName = "Wilson",
-            Email = "manager@example.com",
-            Password = "Pa$$w0rd",
-            Roles = new[] { Roles.Manager }
+            Roles = new[] { Roles.Admin}
         };
 
         var customer = new
@@ -61,15 +52,7 @@ public static class UserAndRoleSeeder
             adminUser.Email,
             adminUser.Password,
             adminUser.Roles);
-
-        await CreateUserAsync(
-            userManager,
-            manager.FirstName,
-            manager.LastName,
-            manager.Email,
-            manager.Password,
-            manager.Roles);
-
+        
         await CreateUserAsync(
             userManager,
             customer.FirstName,

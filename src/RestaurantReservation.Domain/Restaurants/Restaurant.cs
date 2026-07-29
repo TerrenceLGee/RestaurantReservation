@@ -77,7 +77,8 @@ public class Restaurant : BaseEntity
                 $"There was an unexpected error updating your schedule for {scheduleDay.Day}");
         }
 
-        scheduleToUpdate = scheduleDay;
+        Schedule.Remove(scheduleToUpdate);
+        Schedule.Add(scheduleDay);
 
         return Result.Success();
     }

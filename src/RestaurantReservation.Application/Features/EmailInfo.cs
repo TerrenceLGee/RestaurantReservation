@@ -1,4 +1,4 @@
-﻿namespace RestaurantReservation.Application.Features.Reservations.Notification;
+﻿namespace RestaurantReservation.Application.Features;
 
 public record EmailInfo(
     string RecipientName,

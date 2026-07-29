@@ -1,6 +1,5 @@
 ﻿using MediatR;
 
-using RestaurantReservation.Application.Features.Restaurants.Command.Add;
 using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Responses;
 using RestaurantReservation.Domain.Common;
 

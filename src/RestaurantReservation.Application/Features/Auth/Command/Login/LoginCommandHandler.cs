@@ -17,25 +17,25 @@ public sealed class LoginCommandHandler(
     ITokenService tokenService) : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
     public async Task<Result<LoginResponse>> Handle(
-        LoginCommand request, 
+        LoginCommand command, 
         CancellationToken cancellationToken)
     {
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await userManager.FindByEmailAsync(command.Email);
 
         if (user is null)
         {
-            logger.LogWarning("User {Email} not found", request.Email);
+            logger.LogWarning("User {Email} not found", command.Email);
             return Result.Failure<LoginResponse>(UserErrors.UserNotFound);
         }
 
         var checkPassword = await signInManager.CheckPasswordSignInAsync(
             user,
-            request.Password,
+            command.Password,
             false);
 
         if (!checkPassword.Succeeded)
         {
-            logger.LogWarning("User {Email} attempted to login with invalid credentials", request.Email);
+            logger.LogWarning("User {Email} attempted to login with invalid credentials", command.Email);
             return Result.Failure<LoginResponse>(LoginErrors.InvalidCredentials);
         }
 
@@ -45,6 +45,10 @@ public sealed class LoginCommandHandler(
             user, 
             roles, 
             cancellationToken);
+        
+        logger.LogInformation("({Email}) has logged into the system at {Utc}",
+            command.Email,
+            DateTime.UtcNow);
 
         return Result.Success(response.Value);
     }

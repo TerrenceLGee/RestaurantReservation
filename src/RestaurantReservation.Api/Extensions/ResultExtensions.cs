@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
-
 using RestaurantReservation.Domain.Common;
 
 namespace RestaurantReservation.Api.Extensions;

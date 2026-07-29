@@ -1,6 +1,5 @@
 ﻿using RestaurantReservation.Application.Features.Reservations.Query.Responses;
 using RestaurantReservation.Domain.Reservations;
-using RestaurantReservation.Domain.Restaurants;
 
 namespace RestaurantReservation.Application.Features.Reservations.Query.Mappings;
 

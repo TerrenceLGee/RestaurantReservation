@@ -135,13 +135,16 @@ public static class SeedingResources
         return restaurants;
     }
 
-    private static void AddTablesToRestaurant(Restaurant restaurant, int numberOfTables)
+    private static List<Table> AddTablesToRestaurant(Restaurant restaurant, int numberOfTables)
     {
+        var tables = new List<Table>();
         for (int i = 0; i < numberOfTables; i++)
         {
             var seatsAtTable = Random.Shared.Next(1, 9);
-            restaurant.AddTable(seatsAtTable);
+            tables.Add(restaurant.AddTable(seatsAtTable));
         }
+
+        return tables;
     }
 
     private static void AddTablesToTableGroup(Restaurant restaurant, Dictionary<int, string?> tableInfo)
@@ -162,7 +165,7 @@ public static class SeedingResources
                 continue;
             }
 
-            while (count <= tablesInGroup)
+            while (count < tablesInGroup)
             {
                 tablesToAdd.Add(restaurant.Tables.ElementAt(runningCount++));
                 count++;

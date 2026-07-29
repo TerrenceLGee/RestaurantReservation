@@ -32,6 +32,7 @@ public sealed class GetAllRestaurantsQueryHandler(
                 var restaurantsQuery = context.Restaurants
                     .AsNoTracking()
                     .Include(r => r.Tables)
+                    .AsSplitQuery()
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(query.Name))

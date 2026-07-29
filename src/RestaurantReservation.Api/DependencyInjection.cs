@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.OpenApi;
 
 using RestaurantReservation.Api.Handlers;
 using RestaurantReservation.Infrastructure.Persistence;
@@ -36,7 +37,38 @@ public static class DependencyInjection
 
         services.AddOpenApi(options =>
         {
+            options.AddDocumentTransformer((document, _, _) =>
+            {
+                var info = document.Info;
+                info.Title = "Restaurant Reservation Api";
+                info.Description = "An API for Creating, Cancelling, or Updating Restaurant Reservations";
+                info.Contact = new OpenApiContact
+                {
+                    Name = "Terrence L. Gee",
+                    Email = "mrgee1978@proton.me",
+                    Url = new Uri("https://github.com/TerrenceLGee?tab=repositories")
+                };
+                document.Info = info;
 
+                var components = document.Components ?? new OpenApiComponents();
+                components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "Enter your JWT token"
+                };
+
+                document.Components = components;
+
+                var schemeReference = new OpenApiSecuritySchemeReference("Bearer");
+                var securityRequirement = new OpenApiSecurityRequirement { [schemeReference] = [] };
+
+                document.Security ??= [];
+                document.Security.Add(securityRequirement);
+                return Task.CompletedTask;
+            });
         });
 
         services.AddStackExchangeRedisCache(options =>
@@ -54,6 +86,6 @@ public static class DependencyInjection
             options.MaximumPayloadBytes = 1024 * 1024;
         });
 
-        throw new NotImplementedException();
+        return services;
     }
 }

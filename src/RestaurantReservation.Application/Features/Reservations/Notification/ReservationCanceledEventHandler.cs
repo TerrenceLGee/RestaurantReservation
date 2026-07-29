@@ -3,7 +3,7 @@
 using Microsoft.Extensions.Logging;
 
 using RestaurantReservation.Application.Abstractions;
-using RestaurantReservation.Application.Features.Reservations.Notification.Constants;
+using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;

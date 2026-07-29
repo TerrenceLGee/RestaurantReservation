@@ -39,7 +39,7 @@ public sealed class AddTableCommandHandler(
         if (!string.IsNullOrWhiteSpace(command.TableGroup))
         {
             var isValidTableGroup = context.TableGroups.Any(tg => tg.RestaurantId == command.RestaurantId &&
-                                                                  tg.Name.ToLower().Equals(command.TableGroup));
+                                                                  tg.Name.ToLower().Equals(command.TableGroup.ToLower()));
             if (!isValidTableGroup)
             {
                 logger.LogWarning("Table group with name: {Name} not found, unable to add table", command.TableGroup);

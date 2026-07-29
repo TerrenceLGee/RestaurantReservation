@@ -3,7 +3,7 @@
 using MimeKit;
 
 using RestaurantReservation.Application.Abstractions;
-using RestaurantReservation.Application.Features.Reservations.Notification;
+using RestaurantReservation.Application.Features;
 
 namespace RestaurantReservation.Infrastructure.Email;
 

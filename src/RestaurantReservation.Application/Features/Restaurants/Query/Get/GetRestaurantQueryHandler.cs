@@ -33,6 +33,7 @@ public sealed class GetRestaurantQueryHandler(
                     .AsNoTracking()
                     .Include(r => r.TableGroups)
                     .Include(r => r.Tables)
+                    .AsSplitQuery()
                     .FirstOrDefaultAsync(r => r.Id == query.Id, ct);
                 return restaurantFromDb?.ToDetailResponse();
             },

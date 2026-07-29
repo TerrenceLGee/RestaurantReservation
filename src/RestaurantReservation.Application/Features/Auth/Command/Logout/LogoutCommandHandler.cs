@@ -13,14 +13,14 @@ public sealed class LogoutCommandHandler(
     ILogger<LogoutCommandHandler> logger) : IRequestHandler<LogoutCommand, Result>
 {
     public async Task<Result> Handle(
-        LogoutCommand request, 
+        LogoutCommand command, 
         CancellationToken cancellationToken)
     {
         var currentUserId = currentUser.UserId;
         var currentUserEmail = currentUser.Email;
         var currentUserName = currentUser.Name;
 
-        var result = await tokenService.RevokeRefreshTokenAsync(request.RefreshToken, cancellationToken);
+        var result = await tokenService.RevokeRefreshTokenAsync(command.RefreshToken, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -31,9 +31,10 @@ public sealed class LogoutCommandHandler(
             return result;
         }
         
-        logger.LogInformation("{Name} ({Email}) has logged out of the system",
+        logger.LogInformation("{Name} ({Email}) has logged out of the system at {Utc}",
             currentUserName,
-            currentUserEmail);
+            currentUserEmail,
+            DateTime.UtcNow);
         return Result.Success();
     }
 }

@@ -1,4 +1,4 @@
-﻿using RestaurantReservation.Application.Features.Reservations.Notification;
+﻿using RestaurantReservation.Application.Features;
 
 namespace RestaurantReservation.Application.Abstractions;
 

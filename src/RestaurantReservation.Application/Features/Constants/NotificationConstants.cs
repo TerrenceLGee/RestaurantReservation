@@ -1,4 +1,4 @@
-﻿namespace RestaurantReservation.Application.Features.Reservations.Notification.Constants;
+﻿namespace RestaurantReservation.Application.Features.Constants;
 
 public static class NotificationConstants
 {

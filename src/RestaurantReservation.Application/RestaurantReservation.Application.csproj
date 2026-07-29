@@ -8,8 +8,8 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="MediatR" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <PackageReference Include="System.Linq.Dynamic.Core" />
