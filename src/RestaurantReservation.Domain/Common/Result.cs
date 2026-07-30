@@ -46,7 +46,7 @@ public class Result
     public static Result<T> Failure<T>(DomainError error) => new(default, false, error);
     public static Result<T> Failure<T>(List<DomainError> errors) => new(default, false, errors);
 
-    public static Result<T> Create<T>(T? value) => value is not null
+    protected static Result<T> Create<T>(T? value) => value is not null
         ? Success(value)
         : Failure<T>(DomainError.NullValue);
 }

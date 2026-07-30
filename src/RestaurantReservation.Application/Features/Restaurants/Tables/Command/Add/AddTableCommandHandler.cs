@@ -49,6 +49,7 @@ public sealed class AddTableCommandHandler(
             restaurant.AddTableToTableGroup(table, command.TableGroup);
         }
 
+        await context.Tables.AddAsync(table, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         
         logger.LogInformation("A Table was added to {Name}, invalidating cache for key: {RKey} and {TKey} and {TGKey}",

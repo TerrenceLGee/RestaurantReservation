@@ -12,7 +12,7 @@ public static class ResultExtensions
         var description = string.Empty;
         var errorCode = string.Empty;
         
-        if (result.Errors.Count > 0)
+        if (result.Errors is not null && result.Errors.Count > 0)
         {
             errorType = result.Errors[0].ErrorType;
             description = result.Errors[0].Description;
@@ -45,7 +45,7 @@ public static class ResultExtensions
         var description = string.Empty;
         var errorCode = string.Empty;
 
-        if (result.Errors.Count > 0)
+        if (result.Errors is not null && result.Errors.Count > 0)
         {
             errorType = result.Errors[0].ErrorType;
             description = result.Errors[0].Description;

@@ -7,6 +7,7 @@ using RestaurantReservation.Application.Features.Restaurants.Command.Update;
 using RestaurantReservation.Application.Features.Restaurants.Query.Get;
 using RestaurantReservation.Application.Features.Restaurants.Query.GetAll;
 using RestaurantReservation.Application.Features.Restaurants.Tables.Command.Add;
+using RestaurantReservation.Application.Features.Restaurants.Tables.Command.Update;
 using RestaurantReservation.Domain.Users;
 
 namespace RestaurantReservation.Api.Endpoints;
@@ -49,6 +50,12 @@ public static class RestaurantEndpoints
             .WithName("AddTable")
             .WithSummary("Add a table to a restaurant in the system (Admins Only)")
             .RequireAuthorization(policy => 
+                policy.RequireRole(Roles.Admin));
+
+        api.MapPut(Constants.Restaurant.UpdateTable, UpdateTable)
+            .WithName("UpdateTable")
+            .WithSummary("Update a table in a restaurant in the system (Admins Only)")
+            .RequireAuthorization(policy =>
                 policy.RequireRole(Roles.Admin));
     }
 
@@ -144,6 +151,27 @@ public static class RestaurantEndpoints
 
         return result.IsSuccess
             ? TypedResults.Created($"/restaurants/{id}/tables/{result.Value.Id}", result.Value)
+            : result.ToProblemDetails();
+    }
+
+    private static async Task<IResult> UpdateTable(
+        Guid restaurantId,
+        Guid tableId,
+        int? numberOfSeats,
+        string? groupName,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTableCommand(
+            restaurantId,
+            tableId,
+            numberOfSeats,
+            groupName);
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? TypedResults.NoContent()
             : result.ToProblemDetails();
     }
 }
