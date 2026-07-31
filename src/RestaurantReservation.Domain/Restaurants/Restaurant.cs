@@ -96,7 +96,7 @@ public class Restaurant : BaseEntity
 
         if (tableGroup is null)
         {
-            return Result.Failure(TableErrors.TableGroupNotFound(groupName));
+            return Result.Failure(TableGroupErrors.TableGroupNotFound(groupName));
         }
         
         tableGroup.AddTables([table]);

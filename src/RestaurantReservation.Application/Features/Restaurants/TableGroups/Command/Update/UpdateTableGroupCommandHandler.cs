@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 using RestaurantReservation.Application.Abstractions;
 using RestaurantReservation.Application.Features.Constants;
+using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Responses;
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Restaurants.Errors;
 using RestaurantReservation.Domain.Tables;
@@ -23,8 +24,7 @@ public sealed class UpdateTableGroupCommandHandler(
         CancellationToken cancellationToken)
     {
         var restaurant = await context.Restaurants
-            .Include(r => r.Tables)
-            .Include(r => r.TableGroups)
+            .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == command.RestaurantId, cancellationToken);
 
         if (restaurant is null)
@@ -33,9 +33,27 @@ public sealed class UpdateTableGroupCommandHandler(
             return Result.Failure(RestaurantErrors.NotFound());
         }
 
+        if (!string.IsNullOrEmpty(command.GroupName))
+        {
+            var tableGroupNameAlreadyTaken = await context.TableGroups
+                .AsNoTracking()
+                .AnyAsync(tg => tg.RestaurantId == command.RestaurantId
+                                && tg.Name.ToLower().Equals(command.GroupName.ToLower()), cancellationToken);
+
+            if (tableGroupNameAlreadyTaken)
+            {
+                logger.LogWarning("There is already a table group by the name {GName} in {RName}, cannot update this " +
+                                  "table group's name to already reserved table group name",
+                    command.GroupName,
+                    restaurant.Name);
+                return Result.Failure<TableGroupDetailResponse>(
+                    TableGroupErrors.TableGroupNameAlreadyTaken(command.GroupName));
+            }
+        }
+
         var tableGroup = await context.TableGroups
             .Include(tg => tg.Tables)
-            .FirstOrDefaultAsync(tg => tg.Id == command.Id && tg.RestaurantId == command.RestaurantId,
+            .FirstOrDefaultAsync(tg => tg.Id == command.TableGroupId && tg.RestaurantId == command.RestaurantId,
                 cancellationToken);
 
         if (tableGroup is null)
@@ -43,7 +61,7 @@ public sealed class UpdateTableGroupCommandHandler(
             logger.LogInformation("Table group {GName} not found for {RName}, unable to update table group", 
                 command.GroupName,
                 restaurant.Name);
-            return Result.Failure(TableErrors.TableGroupNotFound());
+            return Result.Failure(TableGroupErrors.TableGroupNotFound());
         }
 
         List<Table>? tables = null;
@@ -59,11 +77,14 @@ public sealed class UpdateTableGroupCommandHandler(
         
         tableGroup.Update(command.GroupName, tables);
 
+        if (tables is not null) await context.Tables.AddRangeAsync(tables, cancellationToken);
+        
+        context.TableGroups.Update(tableGroup);
         await context.SaveChangesAsync(cancellationToken);
         
         logger.LogInformation("Table group with Id {GId} was updated in {RName}, invalidating cache for " +
                               "{RKey}, {TGKey} and {TKey}",
-            command.Id,
+            command.TableGroupId,
             restaurant.Name,
             Keys.Restaurants,
             Keys.TableGroups,

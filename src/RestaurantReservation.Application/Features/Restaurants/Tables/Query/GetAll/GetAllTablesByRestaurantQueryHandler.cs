@@ -31,6 +31,7 @@ public sealed class GetAllTablesByRestaurantQueryHandler(
             {
                 logger.LogInformation("Cache miss for key: {Key}. Retrieving from the database", allTablesCacheKey);
                 var tablesQuery = context.Tables
+                    .Include(r => r.Restaurant)
                     .Where(t => t.RestaurantId == query.RestaurantId)
                     .AsNoTracking()
                     .AsQueryable();

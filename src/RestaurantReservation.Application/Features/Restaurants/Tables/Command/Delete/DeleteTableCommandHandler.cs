@@ -57,7 +57,7 @@ public sealed class DeleteTableCommandHandler(
                     logger.LogWarning("Table group {GName} not found in {RName} table not deleted",
                         table.TableGroupName, 
                         restaurant.Name);
-                    return Result.Failure(TableErrors.TableGroupNotFound(table.TableGroupName));
+                    return Result.Failure(TableGroupErrors.TableGroupNotFound(table.TableGroupName));
                 }
                 
                 tableGroup.RemoveTable(table);

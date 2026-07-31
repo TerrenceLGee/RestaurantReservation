@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 using RestaurantReservation.Application.Abstractions;
+using RestaurantReservation.Application.Extensions;
 using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Application.Features.Restaurants.Query.Mappings;
 using RestaurantReservation.Application.Features.Restaurants.Query.Response;
@@ -22,7 +23,7 @@ public sealed class GetRestaurantQueryHandler(
         GetRestaurantQuery query, 
         CancellationToken cancellationToken)
     {
-        var cacheKey = $"restaurant:{query.Id}";
+        var cacheKey = $"restaurant:{query.Id}_tablePage={query.TablePage}_tablePageSize={query.TablePageSize}";
 
         var restaurant = await cache.GetOrCreateAsync(
             cacheKey,
@@ -32,10 +33,25 @@ public sealed class GetRestaurantQueryHandler(
                 var restaurantFromDb = await context.Restaurants
                     .AsNoTracking()
                     .Include(r => r.TableGroups)
-                    .Include(r => r.Tables)
                     .AsSplitQuery()
                     .FirstOrDefaultAsync(r => r.Id == query.Id, ct);
-                return restaurantFromDb?.ToDetailResponse();
+
+                var totalTableCount = await context.Tables
+                    .AsNoTracking()
+                    .CountAsync(t => t.RestaurantId == query.Id, ct);
+
+                var restaurantTablesFromDb = await context.Tables
+                    .AsNoTracking()
+                    .Where(t => t.RestaurantId == query.Id)
+                    .ApplySort("TableGroupName asc")
+                    .ApplyPagination(query.TablePage, query.TablePageSize)
+                    .ToListAsync(ct);
+                
+                return restaurantFromDb?.ToDetailResponse(
+                    restaurantTablesFromDb,
+                    totalTableCount,
+                    query.TablePage,
+                    query.TablePageSize);
             },
             new HybridCacheEntryOptions
             {

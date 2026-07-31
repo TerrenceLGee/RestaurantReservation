@@ -34,15 +34,15 @@ public sealed class DeleteTableGroupCommandHandler(
 
         var tableGroup = await context.TableGroups
             .Include(tg => tg.Tables)
-            .FirstOrDefaultAsync(tg => tg.Id == command.Id && tg.RestaurantId == command.RestaurantId,
+            .FirstOrDefaultAsync(tg => tg.Id == command.TableId && tg.RestaurantId == command.RestaurantId,
                 cancellationToken);
 
         if (tableGroup is null)
         {
             logger.LogWarning("Table group with id {Id} not found in {RName}, unable to delete table group",
-                command.Id,
+                command.TableId,
                 restaurant.Name);
-            return Result.Failure(TableErrors.TableGroupNotFound());
+            return Result.Failure(TableGroupErrors.TableGroupNotFound());
         }
         
         tableGroup.RemoveTables();

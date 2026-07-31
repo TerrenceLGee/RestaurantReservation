@@ -1,7 +1,10 @@
-﻿namespace RestaurantReservation.Application.Features.Restaurants.Query.Response;
+﻿using RestaurantReservation.Domain.Common;
+
+namespace RestaurantReservation.Application.Features.Restaurants.Query.Response;
 
 public record RestaurantDetailResponse(
     Guid Id,
     string Name,
+    List<string> TableGroups,
     List<RestaurantScheduleResponse> Schedule,
-    List<RestaurantTableResponse> TableInfo);
+    PagedResult<RestaurantTableResponse> TableInfo);

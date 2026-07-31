@@ -1,5 +1,7 @@
 using FluentValidation;
 
+using Grpc.Core;
+
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,6 +52,7 @@ public class GlobalExceptionHandler(
         ArgumentException => (StatusCodes.Status400BadRequest, "Invalid argument provided"),
         InvalidOperationException => (StatusCodes.Status400BadRequest, "Invalid operation attempted"),
         UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
+        BadHttpRequestException => (StatusCodes.Status400BadRequest, "Invalid Http Request"),
         _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred")
     };
     

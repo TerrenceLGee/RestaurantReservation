@@ -61,7 +61,7 @@ public sealed class UpdateTableCommandHandler(
                 logger.LogWarning("Table group {Name} not found unable to finish updating table in {RName}",
                     command.GroupName,
                     restaurant.Name);
-                return Result.Failure(TableErrors.TableGroupNotFound(command.GroupName));
+                return Result.Failure(TableGroupErrors.TableGroupNotFound(command.GroupName));
             }
             if (!table.IsInTableGroup)
             {
@@ -89,7 +89,7 @@ public sealed class UpdateTableCommandHandler(
                         logger.LogWarning("Table group {Name} not found unable to finish updating table in {RName}",
                             table.TableGroupName,
                             restaurant.Name);
-                        return Result.Failure(TableErrors.TableGroupNotFound(table.TableGroupName));
+                        return Result.Failure(TableGroupErrors.TableGroupNotFound(table.TableGroupName));
                     }
                     
                     originalTableGroup.RemoveTable(table);

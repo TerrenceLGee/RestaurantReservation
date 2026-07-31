@@ -31,6 +31,7 @@ public sealed class GetTableGroupQueryHandler(
                 logger.LogInformation("Cache miss for key: {Key}. Retrieving from database.", cacheKey);
                 var tableGroupFromDb = await context.TableGroups
                     .AsNoTracking()
+                    .Include(tg => tg.Restaurant)
                     .Include(tg => tg.Tables)
                     .FirstOrDefaultAsync(tg => tg.Id == query.TableGroupId && tg.RestaurantId == query.RestaurantId,
                         ct);
@@ -45,7 +46,7 @@ public sealed class GetTableGroupQueryHandler(
             cancellationToken: cancellationToken);
 
         return tableGroup is null
-            ? Result.Failure<TableGroupDetailResponse>(TableErrors.TableGroupNotFound())
+            ? Result.Failure<TableGroupDetailResponse>(TableGroupErrors.TableGroupNotFound())
             : Result.Success(tableGroup);
     }
 }

@@ -43,7 +43,7 @@ public sealed class AddTableCommandHandler(
             if (!isValidTableGroup)
             {
                 logger.LogWarning("Table group with name: {Name} not found, unable to add table", command.TableGroup);
-                return Result.Failure<RestaurantTableResponse>(TableErrors.TableGroupNotFound(command.TableGroup));
+                return Result.Failure<RestaurantTableResponse>(TableGroupErrors.TableGroupNotFound(command.TableGroup));
             }
 
             restaurant.AddTableToTableGroup(table, command.TableGroup);

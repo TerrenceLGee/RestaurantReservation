@@ -6,4 +6,4 @@ using RestaurantReservation.Domain.Restaurants;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Command.Add;
 
-public record AddRestaurantCommand(string Name, RestaurantSchedule[] Schedule, TableInfo[] TableInfo) : IRequest<Result<RestaurantDetailResponse>>;
+public record AddRestaurantCommand(string Name, RestaurantSchedule[] Schedule, TableInfo[] TableInfo) : IRequest<Result<RestaurantAddedResponse>>;

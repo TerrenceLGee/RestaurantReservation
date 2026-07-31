@@ -1,4 +1,5 @@
 ﻿using RestaurantReservation.Application.Features.Restaurants.Query.Response;
+using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Restaurants;
 using RestaurantReservation.Domain.Tables;
 
@@ -6,13 +7,32 @@ namespace RestaurantReservation.Application.Features.Restaurants.Query.Mappings;
 
 public static class ResponseMappings
 {
-    public static RestaurantDetailResponse ToDetailResponse(this Restaurant restaurant)
+    public static RestaurantDetailResponse ToDetailResponse(
+        this Restaurant restaurant,
+        List<Table> tables,
+        int totalTableCount,
+        int tablePage,
+        int tablePageSize)
     {
         return new RestaurantDetailResponse(
             restaurant.Id,
             restaurant.Name,
+            restaurant.TableGroups.ToTableGroupNameResponse(),
             restaurant.Schedule.ToScheduleResponseCollection(),
-            restaurant.Tables.ToTableResponseCollection());
+            tables.ToPagedTableResponseCollection(
+                totalTableCount, 
+                tablePage, 
+                tablePageSize));
+    }
+
+    public static RestaurantAddedResponse ToAddedDetailResponse(this Restaurant restaurant)
+    {
+        return new RestaurantAddedResponse(
+            restaurant.Id,
+            restaurant.Name,
+            restaurant.Tables.Count,
+            restaurant.TableGroups.ToTableGroupNameResponse(),
+            restaurant.Schedule.ToScheduleResponseCollection());
     }
 
     public static RestaurantResponse ToResponse(this Restaurant restaurant)
@@ -36,7 +56,23 @@ public static class ResponseMappings
     
     public static List<RestaurantTableResponse> ToTableResponseCollection(this IEnumerable<Table> tables)
     {
-        return [.. tables.Select(t => t.ToTableResponse())];
+        return [.. tables.Select(t => t.ToTableResponse()).OrderBy(t => t.TableGroupName)];
+    }
+
+    public static PagedResult<RestaurantTableResponse> ToPagedTableResponseCollection(
+        this List<Table> tables,
+        int totalTableCount,
+        int tablePage,
+        int tablePageSize)
+    {
+        var tableItems = tables.Select(t => t.ToTableResponse())
+            .ToList();
+
+        return new PagedResult<RestaurantTableResponse>(
+            tableItems,
+            totalTableCount,
+            tablePage,
+            tablePageSize);
     }
     
     public static RestaurantScheduleResponse ToScheduleResponse(this RestaurantSchedule schedule)
@@ -54,5 +90,10 @@ public static class ResponseMappings
             table.Id,
             table.SeatsAtTable,
             groupName);
+    }
+
+    public static List<string> ToTableGroupNameResponse(this IEnumerable<TableGroup> tableGroups)
+    {
+        return [.. tableGroups.Select(tg => tg.Name).ToList()];
     }
 }

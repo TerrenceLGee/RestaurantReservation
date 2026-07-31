@@ -31,8 +31,9 @@ public sealed class GetAllTableGroupsQueryHandler(
             {
                 logger.LogInformation("Cache miss for key: {Key}. Retrieving from the database.", allTableGroupsQuery);
                 var tableGroupsQuery = context.TableGroups
-                    .Where(tg => tg.RestaurantId == query.RestaurantId)
                     .AsNoTracking()
+                    .Where(tg => tg.RestaurantId == query.RestaurantId)
+                    .Include(tg => tg.Restaurant)
                     .Include(tg => tg.Tables)
                     .AsQueryable();
 

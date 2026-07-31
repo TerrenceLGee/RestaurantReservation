@@ -11,6 +11,7 @@ using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.R
 using RestaurantReservation.Domain.Common;
 using RestaurantReservation.Domain.Restaurants.Errors;
 using RestaurantReservation.Domain.Tables;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Add;
 
@@ -32,6 +33,20 @@ public sealed class AddTableGroupCommandHandler(
         {
             logger.LogWarning("Restaurant with id {Id} not found in the system unable to add table group", command.RestaurantId);
             return Result.Failure<TableGroupDetailResponse>(RestaurantErrors.NotFound());
+        }
+
+        var tableGroupAlreadyExists = await context.TableGroups
+            .AsNoTracking()
+            .AnyAsync(
+                tg => tg.RestaurantId == command.RestaurantId && tg.Name.ToLower().Equals(command.Name.ToLower()),
+                cancellationToken);
+
+        if (tableGroupAlreadyExists)
+        {
+            logger.LogWarning("Table group {GName} already exists in {RName}, no table group was added",
+                command.Name,
+                restaurant.Name);
+            return Result.Failure<TableGroupDetailResponse>(TableGroupErrors.TableGroupAlreadyExists(command.Name));
         }
 
         var tableGroup = TableGroup.Create(command.RestaurantId, command.Name);

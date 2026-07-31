@@ -18,9 +18,9 @@ namespace RestaurantReservation.Application.Features.Restaurants.Command.Add;
 public sealed class AddRestaurantCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
-    ILogger<AddRestaurantCommandHandler> logger) : IRequestHandler<AddRestaurantCommand, Result<RestaurantDetailResponse>>
+    ILogger<AddRestaurantCommandHandler> logger) : IRequestHandler<AddRestaurantCommand, Result<RestaurantAddedResponse>>
 {
-    public async Task<Result<RestaurantDetailResponse>> Handle(
+    public async Task<Result<RestaurantAddedResponse>> Handle(
         AddRestaurantCommand command, 
         CancellationToken cancellationToken)
     {
@@ -31,7 +31,7 @@ public sealed class AddRestaurantCommandHandler(
         {
             logger.LogWarning("A restaurant named {Name} already exists in the system and cannot be added",
                 command.Name);
-            return Result.Failure<RestaurantDetailResponse>(RestaurantErrors.AlreadyExists(command.Name));
+            return Result.Failure<RestaurantAddedResponse>(RestaurantErrors.AlreadyExists(command.Name));
         }
 
         var restaurant = Restaurant.Create(command.Name);
@@ -61,6 +61,6 @@ public sealed class AddRestaurantCommandHandler(
             Keys.Restaurants);
         await cache.RemoveByTagAsync(Keys.Restaurants, cancellationToken);
 
-        return Result.Success(restaurant.ToDetailResponse());
+        return Result.Success(restaurant.ToAddedDetailResponse());
     }
 }
