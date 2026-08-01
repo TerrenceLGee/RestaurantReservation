@@ -11,7 +11,7 @@ using RestaurantReservation.Domain.Restaurants.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Command.Delete;
 
-public class DeleteRestaurantCommandHandler(
+public sealed class DeleteRestaurantCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<DeleteRestaurantCommandHandler> logger) : IRequestHandler<DeleteRestaurantCommand, Result>

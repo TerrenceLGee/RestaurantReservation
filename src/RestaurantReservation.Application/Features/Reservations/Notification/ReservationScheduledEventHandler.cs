@@ -8,7 +8,7 @@ using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;
 
-public class ReservationScheduledEventHandler(
+public sealed class ReservationScheduledEventHandler(
     IEmailService emailService,
     ILogger<ReservationScheduledEventHandler> logger) : INotificationHandler<ReservationScheduledEvent>
 {

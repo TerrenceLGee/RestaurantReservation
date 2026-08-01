@@ -67,6 +67,7 @@ try
 
     app.MapAuthEndpoints();
     app.MapRestaurantEndpoints();
+    app.MapReservationEndpoints();
     app.Run();
 }
 catch (Exception ex)

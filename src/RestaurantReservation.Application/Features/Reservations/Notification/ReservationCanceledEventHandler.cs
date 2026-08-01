@@ -8,7 +8,7 @@ using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;
 
-public class ReservationCanceledEventHandler(
+public sealed class ReservationCanceledEventHandler(
     IEmailService emailService,
     ILogger<ReservationCanceledEventHandler> logger) : INotificationHandler<ReservationCanceledEvent>
 {

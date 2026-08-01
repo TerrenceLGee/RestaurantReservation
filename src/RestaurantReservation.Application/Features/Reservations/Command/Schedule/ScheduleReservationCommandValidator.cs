@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 
-internal sealed partial class MakeReservationCommandValidator : AbstractValidator<MakeReservationCommand>
+internal sealed partial class ScheduleReservationCommandValidator : AbstractValidator<ScheduleReservationCommand>
 {
-    public MakeReservationCommandValidator()
+    public ScheduleReservationCommandValidator()
     {
         RuleFor(x => x.CustomerFirstName)
             .NotEmpty()

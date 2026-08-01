@@ -2,7 +2,7 @@
 
 namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Update;
 
-internal class UpdateTableGroupCommandValidator : AbstractValidator<UpdateTableGroupCommand>
+internal sealed class UpdateTableGroupCommandValidator : AbstractValidator<UpdateTableGroupCommand>
 {
     public UpdateTableGroupCommandValidator()
     {

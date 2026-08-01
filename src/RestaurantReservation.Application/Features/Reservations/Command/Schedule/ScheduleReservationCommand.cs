@@ -5,7 +5,7 @@ using RestaurantReservation.Domain.Common;
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 
-public record MakeReservationCommand(
+public record ScheduleReservationCommand(
     string RestaurantName,
     string CustomerFirstName,
     string CustomerLastName,

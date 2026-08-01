@@ -16,7 +16,7 @@ using RestaurantReservation.Domain.Users.Errors;
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Cancel;
 
-public class CancelReservationCommandHandler(
+public sealed class CancelReservationCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ICurrentUser currentUser,

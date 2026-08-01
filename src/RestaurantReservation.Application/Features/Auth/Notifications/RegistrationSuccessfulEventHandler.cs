@@ -8,7 +8,7 @@ using RestaurantReservation.Domain.Users.Events;
 
 namespace RestaurantReservation.Application.Features.Auth.Notifications;
 
-public class RegistrationSuccessfulEventHandler(
+public sealed class RegistrationSuccessfulEventHandler(
     IEmailService emailService,
     ILogger<RegistrationSuccessfulEventHandler> logger) : INotificationHandler<RegistrationSuccessfulEvent>
 {

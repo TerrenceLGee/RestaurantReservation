@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace RestaurantReservation.Application.Features.Auth.Command.Register;
 
-internal partial class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
+internal sealed partial class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
 {
     public RegisterUserCommandValidator()
     {

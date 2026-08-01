@@ -11,7 +11,7 @@ using RestaurantReservation.Domain.Restaurants.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Command.Update;
 
-public class UpdateRestaurantCommandHandler(
+public sealed class UpdateRestaurantCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<UpdateRestaurantCommandHandler> logger) : IRequestHandler<UpdateRestaurantCommand, Result>

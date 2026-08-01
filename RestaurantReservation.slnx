@@ -11,4 +11,8 @@
     <Project Path="src/RestaurantReservation.Domain/RestaurantReservation.Domain.csproj" />
     <Project Path="src/RestaurantReservation.Infrastructure/RestaurantReservation.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RestaurantReservation.ArchitectureTests/RestaurantReservation.ArchitectureTests.csproj" />
+    <Project Path="tests/RestaurantReservation.IntegrationTests/RestaurantReservation.IntegrationTests.csproj" />
+  </Folder>
 </Solution>

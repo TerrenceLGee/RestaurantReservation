@@ -16,14 +16,14 @@ using RestaurantReservation.Domain.Users.Errors;
 
 namespace RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 
-public sealed class MakeReservationCommandHandler(
+public sealed class ScheduleReservationCommandHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ICurrentUser currentUser,
-    ILogger<MakeReservationCommandHandler> logger) : IRequestHandler<MakeReservationCommand, Result<ReservationDetailResponse>>
+    ILogger<ScheduleReservationCommandHandler> logger) : IRequestHandler<ScheduleReservationCommand, Result<ReservationDetailResponse>>
 {
     public async Task<Result<ReservationDetailResponse>> Handle(
-        MakeReservationCommand command, 
+        ScheduleReservationCommand command, 
         CancellationToken cancellationToken)
     {
         var customerId = currentUser.UserId;
@@ -67,6 +67,7 @@ public sealed class MakeReservationCommandHandler(
         var tableToReserve = await context.Tables
             .Include(t => t.Reservations)
             .Where(t => t.SeatsAtTable >= command.NumberOfGuests && t.RestaurantId == restaurant.Id)
+            .OrderBy(t => t.SeatsAtTable)
             .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ScheduledReservation.ReservationDay == command.ReservationDate &&
                                                                r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
                                                                command.ReservationStartTime < r.ScheduledReservation.ReservationEnd),
@@ -78,6 +79,7 @@ public sealed class MakeReservationCommandHandler(
                 .Include(tg => tg.Tables)
                 .ThenInclude(tbl => tbl.Reservations)
                 .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.NumberOfGuests)
+                .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
                 .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r => 
                     r.ScheduledReservation.ReservationDay == command.ReservationDate &&
                     r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&

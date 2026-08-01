@@ -41,7 +41,7 @@ public static class RestaurantErrors
 
     public static DomainError HoursOutOfRange(string name, DateOnly date, TimeOnly start, TimeOnly end) => new(
         "Restaurant.InvalidDay",
-        $"The date {date} is invalid to schedule a reservation at {name}",
+        $"The hours of {start:h:mm:ss tt} to {end:h:mm:ss tt} on {date} is an invalid time to schedule a reservation at {name}",
         ErrorType.BadRequest);
 
     public static DomainError NotFound(string name) => new(

@@ -8,7 +8,7 @@ using RestaurantReservation.Domain.Reservations.Events;
 
 namespace RestaurantReservation.Application.Features.Reservations.Notification;
 
-public class ReservationCompletedEventHandler(
+public sealed class ReservationCompletedEventHandler(
     IEmailService emailService,
     ILogger<ReservationCompletedEventHandler> logger) : INotificationHandler<ReservationCompletedEvent>
 {

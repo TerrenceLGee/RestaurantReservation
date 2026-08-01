@@ -13,7 +13,7 @@ using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Query.Get;
 
-public class GetTableQueryHandler(
+public sealed class GetTableQueryHandler(
     IApplicationDbContext context,
     HybridCache cache,
     ILogger<GetTableQueryHandler> logger) : IRequestHandler<GetTableQuery, Result<TableDetailResponse>>

@@ -76,12 +76,13 @@ public sealed class RescheduleReservationCommandHandler(
                 command.RestaurantName,
                 customerEmail);
             return Result.Failure<RescheduledReservationDetailResponse>(
-                RestaurantErrors.RestaurantClosedToday(restaurant.Name, command.RescheduleDate));
+                isOpenResult.Error);
         }
 
         var tableToReserve = await context.Tables
             .Include(t => t.Reservations)
             .Where(t => t.SeatsAtTable >= command.RescheduleNumberOfGuests && t.RestaurantId == restaurant.Id)
+            .OrderBy(t => t.SeatsAtTable)
             .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId 
             && r.ScheduledReservation.ReservationDay == command.RescheduleDate 
             && r.ScheduledReservation.ReservationStart < command.RescheduleEndTime 
@@ -93,6 +94,7 @@ public sealed class RescheduleReservationCommandHandler(
                 .Include(tg => tg.Tables)
                 .ThenInclude(tbl => tbl.Reservations)
                 .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.RescheduleNumberOfGuests)
+                .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
                 .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId
                                                                          && r.ScheduledReservation.ReservationDay ==
                                                                          command.RescheduleDate
@@ -172,7 +174,7 @@ public sealed class RescheduleReservationCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
         
-        logger.LogError("{Email} just updated a reservation. Invaliding the cache for key: {Key} and {TKey} and {TGKey}",
+        logger.LogInformation("{Email} just updated a reservation. Invaliding the cache for key: {Key} and {TKey} and {TGKey}",
             customerEmail,
             Keys.Reservations,
             Keys.Tables,

@@ -1,7 +1,5 @@
 using FluentValidation;
 
-using Grpc.Core;
-
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
