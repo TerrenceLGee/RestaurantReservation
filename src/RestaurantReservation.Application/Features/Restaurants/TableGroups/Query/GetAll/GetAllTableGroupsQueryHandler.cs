@@ -10,6 +10,7 @@ using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Mappings;
 using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Responses;
 using RestaurantReservation.Domain.Common;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.GetAll;
 
@@ -65,6 +66,12 @@ public sealed class GetAllTableGroupsQueryHandler(
             },
             tags: [Keys.TableGroups],
             cancellationToken: cancellationToken);
+
+        if (items.Count == 0)
+        {
+            logger.LogWarning("There were no table groups found for a restaurant with Id {Id}", query.RestaurantId);
+            return Result.Failure<PagedResult<TableGroupResponse>>(TableGroupErrors.TableGroupsNotFound());
+        }
 
         var pagedResult = new PagedResult<TableGroupResponse>(items, totalCount, query.Page, query.PageSize);
         return Result.Success(pagedResult);

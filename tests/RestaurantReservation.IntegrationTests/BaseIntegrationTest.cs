@@ -13,6 +13,7 @@ using RestaurantReservation.Application.Features.Restaurants.Command.Add;
 using RestaurantReservation.Application.Features.Restaurants.Query.Response;
 using RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Add;
 using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Responses;
+using RestaurantReservation.Application.Features.Restaurants.Tables.Command.Add;
 using RestaurantReservation.Domain.Restaurants;
 using RestaurantReservation.Infrastructure.Persistence;
 
@@ -134,5 +135,23 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
         tableGroupResult.Should().NotBeNull();
 
         return tableGroupResult.Id;
+    }
+
+    public async Task<Guid> CreateTableForRetrieval(AddTableCommand table)
+    {
+        await LoginAndSetAuthenticationAsync("admin@example.com", "Pa$$w0rd");
+
+        var tableResponse = await Client.PostAsJsonAsync($"/api/restaurants/{table.RestaurantId}/tables/add",
+            new { NumberOfSeats = table.NumberOfSeats, TableGroup = table.TableGroup },
+            TestContext.Current.CancellationToken);
+
+        tableResponse.EnsureSuccessStatusCode();
+
+        var tableResult = await tableResponse.Content.ReadFromJsonAsync<RestaurantTableResponse>(
+            TestContext.Current.CancellationToken);
+
+        tableResult.Should().NotBeNull();
+
+        return tableResult.Id;
     }
 }

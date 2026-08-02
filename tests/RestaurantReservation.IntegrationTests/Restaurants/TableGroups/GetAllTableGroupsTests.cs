@@ -30,4 +30,18 @@ public class GetAllTableGroupsTests(IntegrationTestWebAppFactory factory) : Base
         tableGroupsResult.HasPreviousPage.Should().BeFalse();
         tableGroupsResult.HasNextPage.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task GetAllTableGroups_Returns_StatusCode_404NotFound_When_RestaurantId_IsInvalid()
+    {
+        await LoginAndSetAuthenticationAsync("admin@example.com", "Pa$$w0rd");
+        
+        var restaurantId = Guid.CreateVersion7();
+
+        var tableGroupsResponse = await Client.GetAsync($"/api/restaurants/{restaurantId}/tablegroups",
+            TestContext.Current.CancellationToken);
+
+        tableGroupsResponse.IsSuccessStatusCode.Should().BeFalse();
+        tableGroupsResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

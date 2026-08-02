@@ -14,6 +14,11 @@ public static class TableGroupErrors
         "TableGroup.NotFound",
         "Table group not found",
         ErrorType.NotFound);
+
+    public static DomainError TableGroupsNotFound() => new(
+        "TableGroups.NotFound",
+        "Tables groups not found",
+        ErrorType.NotFound);
     
     public static DomainError TableGroupAlreadyExists(string groupName) => new(
         "TableGroup.AlreadyExists",
