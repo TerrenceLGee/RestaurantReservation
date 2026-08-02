@@ -315,7 +315,7 @@ public static class RestaurantEndpoints
             tableGroupId,
             query.GroupName,
             query.NumberOfTables,
-            query.SeatsAtTable);
+            query.NumberOfSeats);
 
         var result = await sender.Send(command, cancellationToken);
 
@@ -326,13 +326,13 @@ public static class RestaurantEndpoints
 
     private static async Task<IResult> DeleteTableGroup(
         Guid restaurantId,
-        Guid tableId,
+        Guid tableGroupId,
         ISender sender,
         CancellationToken cancellationToken)
     {
         var command = new DeleteTableGroupCommand(
             restaurantId,
-            tableId);
+            tableGroupId);
 
         var result = await sender.Send(command, cancellationToken);
 

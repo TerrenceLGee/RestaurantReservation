@@ -11,6 +11,8 @@ using RestaurantReservation.Application.Features.Auth.Command.Login;
 using RestaurantReservation.Application.Features.Reservations.Query.Responses;
 using RestaurantReservation.Application.Features.Restaurants.Command.Add;
 using RestaurantReservation.Application.Features.Restaurants.Query.Response;
+using RestaurantReservation.Application.Features.Restaurants.TableGroups.Command.Add;
+using RestaurantReservation.Application.Features.Restaurants.TableGroups.Query.Responses;
 using RestaurantReservation.Domain.Restaurants;
 using RestaurantReservation.Infrastructure.Persistence;
 
@@ -91,7 +93,13 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
                     new(WeekDay.Friday, [new TimeOnly(9, 0), new TimeOnly(22, 30)]),
                     new(WeekDay.Saturday, [new TimeOnly(9, 0), new TimeOnly(23, 00)])
                 },
-                TableInfo = new TableInfo[] { new(45, 6, "Main Dining Room") }
+                TableInfo = new TableInfo[]
+                {
+                    new(45, 6, "Main Dining Room"),
+                    new(30, 4, "Outside Patio"),
+                    new(10, 3),
+                    new(20, 8, "Family Dining Room")
+                }
             }, TestContext.Current.CancellationToken);
             
             restaurantResponse.EnsureSuccessStatusCode();
@@ -102,5 +110,29 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
             restaurantResult.Should().NotBeNull();
 
             return restaurantResult.Id;
+    }
+
+    protected async Task<Guid> CreateTableGroupForRetrieval(AddTableGroupCommand groupInfo)
+    {
+        await LoginAndSetAuthenticationAsync("admin@example.com", "Pa$$w0rd");
+        
+        var tableGroupResponse = await Client.PostAsJsonAsync(
+            $"/api/restaurants/{groupInfo.RestaurantId}/tablegroups/add",
+            new
+            {
+                Name = groupInfo.Name,
+                NumberOfTables = groupInfo.NumberOfTables,
+                NumberOfSeats = groupInfo.NumberOfSeats
+            },
+            TestContext.Current.CancellationToken);
+
+        tableGroupResponse.EnsureSuccessStatusCode();
+
+        var tableGroupResult = await tableGroupResponse.Content.ReadFromJsonAsync<TableGroupDetailResponse>(
+            TestContext.Current.CancellationToken);
+
+        tableGroupResult.Should().NotBeNull();
+
+        return tableGroupResult.Id;
     }
 }

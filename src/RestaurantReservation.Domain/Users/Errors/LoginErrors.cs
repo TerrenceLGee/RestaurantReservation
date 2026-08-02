@@ -6,6 +6,6 @@ public static class LoginErrors
 {
     public static readonly DomainError InvalidCredentials = new(
         "Invalid.Credentials",
-        "the entered credentials were invalid",
+        "The entered credentials were invalid",
         ErrorType.Unauthorized);
 }

@@ -47,6 +47,7 @@ public sealed class DeleteTableGroupCommandHandler(
         
         tableGroup.RemoveTables();
 
+        context.TableGroups.Remove(tableGroup);
         await context.SaveChangesAsync(cancellationToken);
         
         logger.LogInformation("Table group {GName} has been removed from {RName}. Invalidating cache for keys: " +
