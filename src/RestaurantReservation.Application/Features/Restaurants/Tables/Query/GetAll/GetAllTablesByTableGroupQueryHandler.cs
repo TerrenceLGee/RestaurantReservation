@@ -10,6 +10,7 @@ using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Application.Features.Restaurants.Tables.Query.Mappings;
 using RestaurantReservation.Application.Features.Restaurants.Tables.Query.Responses;
 using RestaurantReservation.Domain.Common;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Query.GetAll;
 
@@ -34,6 +35,7 @@ public sealed class GetAllTablesByTableGroupQueryHandler(
                     .Where(t => t.RestaurantId == query.RestaurantId 
                     && !string.IsNullOrEmpty(t.TableGroupName) 
                     && t.TableGroupName.ToLower().Equals(query.TableGroupName.ToLower()))
+                    .Include(t => t.Restaurant)
                     .AsNoTracking()
                     .AsQueryable();
 
@@ -59,6 +61,14 @@ public sealed class GetAllTablesByTableGroupQueryHandler(
             },
             tags: [Keys.Tables],
             cancellationToken: cancellationToken);
+
+        if (items.Count == 0)
+        {
+            logger.LogWarning("No tables found for table group {GName} in restaurant with Id {Id}",
+                query.TableGroupName,
+                query.RestaurantId);
+            return Result.Failure<PagedResult<TableResponse>>(TableErrors.TablesNotFound);
+        }
 
         var pagedResult = new PagedResult<TableResponse>(items, totalCount, query.Page, query.PageSize);
         return Result.Success(pagedResult);

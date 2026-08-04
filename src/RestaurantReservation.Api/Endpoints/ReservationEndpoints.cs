@@ -90,7 +90,7 @@ public static class ReservationEndpoints
                 result.Value.RescheduledReservationDate,
                 result.Value.RescheduledReservationStartTime,
                 result.Value.RescheduledReservationEndTime,
-                result.Value.NumberOfGuests),
+                result.Value.OriginalNumberOfGuests),
             cancellationToken);
 
         return TypedResults.Ok(result.Value);

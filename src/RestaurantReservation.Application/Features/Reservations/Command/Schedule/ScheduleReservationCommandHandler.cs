@@ -64,26 +64,53 @@ public sealed class ScheduleReservationCommandHandler(
                 command.ReservationDate));
         }
 
-        var tableToReserve = await context.Tables
-            .Include(t => t.Reservations)
-            .Where(t => t.SeatsAtTable >= command.NumberOfGuests && t.RestaurantId == restaurant.Id)
-            .OrderBy(t => t.SeatsAtTable)
-            .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ScheduledReservation.ReservationDay == command.ReservationDate &&
-                                                               r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
-                                                               command.ReservationStartTime < r.ScheduledReservation.ReservationEnd),
-                cancellationToken);
+        var tableToReserve = string.IsNullOrEmpty(command.TableGroup)
+            ? await context.Tables
+                .Include(t => t.Reservations)
+                .Where(t => t.SeatsAtTable >= command.NumberOfGuests && t.RestaurantId == restaurant.Id)
+                .OrderBy(t => t.SeatsAtTable)
+                .FirstOrDefaultAsync(t => !t.Reservations.Any(r =>
+                        r.ScheduledReservation.ReservationDay == command.ReservationDate &&
+                        r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
+                        command.ReservationStartTime < r.ScheduledReservation.ReservationEnd),
+                    cancellationToken)
+            : await context.Tables
+                .Include(t => t.Reservations)
+                .Where(t => t.SeatsAtTable >= command.NumberOfGuests && t.RestaurantId == restaurant.Id && 
+                            t.IsInTableGroup
+                            && !string.IsNullOrEmpty(t.TableGroupName) 
+                            && t.TableGroupName.ToLower().Equals(command.TableGroup.ToLower()))
+                .OrderBy(t => t.SeatsAtTable)
+                .FirstOrDefaultAsync(t => !t.Reservations.Any(r =>
+                        r.ScheduledReservation.ReservationDay == command.ReservationDate &&
+                        r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
+                        command.ReservationStartTime < r.ScheduledReservation.ReservationEnd),
+                    cancellationToken);
 
         if (tableToReserve is null)
         {
-            var tableGroupToReserve = await context.TableGroups
-                .Include(tg => tg.Tables)
-                .ThenInclude(tbl => tbl.Reservations)
-                .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.NumberOfGuests)
-                .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
-                .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r => 
-                    r.ScheduledReservation.ReservationDay == command.ReservationDate &&
-                    r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
-                    command.ReservationStartTime < r.ScheduledReservation.ReservationEnd)), cancellationToken);
+            var tableGroupToReserve = string.IsNullOrEmpty(command.TableGroup)
+                ? await context.TableGroups
+                    .Include(tg => tg.Tables)
+                    .ThenInclude(tbl => tbl.Reservations)
+                    .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.NumberOfGuests && tg.RestaurantId == restaurant.Id)
+                    .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
+                    .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r =>
+                        r.ScheduledReservation.ReservationDay == command.ReservationDate &&
+                        r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
+                        command.ReservationStartTime < r.ScheduledReservation.ReservationEnd)), cancellationToken)
+                : await context.TableGroups
+                    .Include(tg => tg.Tables)
+                    .ThenInclude(tbl => tbl.Reservations)
+                    .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.NumberOfGuests && tg.RestaurantId == restaurant.Id)
+                    .Where(tg => tg.Tables.All(t => t.IsInTableGroup 
+                    && !string.IsNullOrEmpty(t.TableGroupName)
+                    && t.TableGroupName.ToLower().Equals(command.TableGroup.ToLower())))
+                    .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
+                    .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r =>
+                        r.ScheduledReservation.ReservationDay == command.ReservationDate &&
+                        r.ScheduledReservation.ReservationStart < command.ReservationEndTime &&
+                        command.ReservationStartTime < r.ScheduledReservation.ReservationEnd)), cancellationToken);
 
             if (tableGroupToReserve is null)
             {
@@ -92,12 +119,16 @@ public sealed class ScheduleReservationCommandHandler(
                 return Result.Failure<ReservationDetailResponse>(ReservationErrors.UnableToSecureTablesForReservation);
             }
 
-            foreach (var table in tableGroupToReserve.Tables)
+            var guests = command.NumberOfGuests;
+            var index = 0;
+
+            while (guests > 0)
             {
-                var result = table.ReserveTable(
-                    command.ReservationDate,
-                    command.ReservationStartTime,
-                    command.ReservationEndTime);
+                var result = tableGroupToReserve.Tables.ElementAt(index++)
+                    .ReserveTable(
+                        command.ReservationDate,
+                        command.ReservationStartTime,
+                        command.ReservationEndTime);
 
                 if (result.IsFailure)
                 {
@@ -105,8 +136,9 @@ public sealed class ScheduleReservationCommandHandler(
                 }
                 
                 reservationTables.Add(result.Value);
-            }
 
+                guests -= result.Value.SeatsAtTable;
+            }
         }
         else
         {
@@ -148,6 +180,7 @@ public sealed class ScheduleReservationCommandHandler(
         {
             reservationTable.ReservationId = reservationResult.Value.Id;
             reservationResult.Value.AddReservationTable(reservationTable);
+            await context.ReservationTables.AddAsync(reservationTable, cancellationToken);
         }
         else
         {
@@ -156,6 +189,8 @@ public sealed class ScheduleReservationCommandHandler(
                 table.ReservationId = reservationResult.Value.Id;
                 reservationResult.Value.AddReservationTable(table);
             }
+
+            await context.ReservationTables.AddRangeAsync(reservationTables, cancellationToken);
         }
 
         await context.Reservations.AddAsync(reservationResult.Value, cancellationToken);

@@ -84,6 +84,12 @@ public static class RestaurantEndpoints
             .RequireAuthorization(policy =>
                 policy.RequireRole(Roles.Admin));
 
+        api.MapGet(Constants.Restaurant.GetTablesByGroupName, GetTablesByGroupName)
+            .WithName("GetTablesByGroupName")
+            .WithSummary("Get all tables belonging to a table group in a restaurant in the system (Admins Only)")
+            .RequireAuthorization(policy =>
+                policy.RequireRole(Roles.Admin));
+
         api.MapPost(Constants.Restaurant.AddTableGroup, AddTableGroup)
             .WithName("AddTableGroup")
             .WithSummary("Add a new table group to a restaurant in the system (Admins Only)")
@@ -276,6 +282,29 @@ public static class RestaurantEndpoints
         CancellationToken cancellationToken)
     {
         var query = new GetAllTablesByRestaurantQuery(restaurantId, page ?? 1, pageSize ?? 10, sortBy);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? TypedResults.Ok(result.Value)
+            : result.ToProblemDetails();
+    }
+
+    private static async Task<IResult> GetTablesByGroupName(
+        Guid restaurantId,
+        string tableGroupName,
+        int? page,
+        int? pageSize,
+        string? sortBy,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllTablesByTableGroupQuery(
+            restaurantId,
+            tableGroupName,
+            page ?? 1,
+            pageSize ?? 10,
+            sortBy);
 
         var result = await sender.Send(query, cancellationToken);
 

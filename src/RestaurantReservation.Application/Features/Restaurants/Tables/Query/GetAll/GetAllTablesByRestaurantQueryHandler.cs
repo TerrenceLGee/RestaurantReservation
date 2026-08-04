@@ -10,6 +10,7 @@ using RestaurantReservation.Application.Features.Constants;
 using RestaurantReservation.Application.Features.Restaurants.Tables.Query.Mappings;
 using RestaurantReservation.Application.Features.Restaurants.Tables.Query.Responses;
 using RestaurantReservation.Domain.Common;
+using RestaurantReservation.Domain.Tables.Errors;
 
 namespace RestaurantReservation.Application.Features.Restaurants.Tables.Query.GetAll;
 
@@ -63,6 +64,13 @@ public sealed class GetAllTablesByRestaurantQueryHandler(
             }, 
             tags: [Keys.Tables],
             cancellationToken: cancellationToken);
+
+        if (items.Count == 0)
+        {
+            logger.LogWarning("No tables found for restaurant with Id {Id}", 
+                query.RestaurantId);
+            return Result.Failure<PagedResult<TableResponse>>(TableErrors.TablesNotFound);
+        }
 
         var pagedResult = new PagedResult<TableResponse>(items, totalCount, query.Page, query.PageSize);
         return Result.Success(pagedResult);

@@ -14,4 +14,5 @@ public record ScheduleReservationCommand(
     DateOnly ReservationDate,
     TimeOnly ReservationStartTime,
     TimeOnly ReservationEndTime,
-    int NumberOfGuests) : IRequest<Result<ReservationDetailResponse>>;
+    int NumberOfGuests,
+    string? TableGroup = null) : IRequest<Result<ReservationDetailResponse>>;

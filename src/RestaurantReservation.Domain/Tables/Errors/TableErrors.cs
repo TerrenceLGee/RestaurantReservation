@@ -29,6 +29,11 @@ public static class TableErrors
         "Table not found",
         ErrorType.NotFound);
 
+    public static readonly DomainError TablesNotFound = new(
+        "Tables.NotFound",
+        "Tables not found",
+        ErrorType.NotFound);
+
     public static DomainError TableAlreadyInTableGroup(string groupName) => new(
         "Table.AlreadyInTableGroup",
         $"Table is already in table group {groupName}",

@@ -62,7 +62,8 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
                 ReservationDate = new DateOnly(2026, 9, 1),
                 ReservationStartTime = new TimeOnly(19, 00),
                 ReservationEndTime = new TimeOnly(20, 00),
-                NumberOfGuests = 3
+                NumberOfGuests = 3,
+                TableGroup = "Main Dining Room"
             }, TestContext.Current.CancellationToken);
 
         reservationResponse.EnsureSuccessStatusCode();

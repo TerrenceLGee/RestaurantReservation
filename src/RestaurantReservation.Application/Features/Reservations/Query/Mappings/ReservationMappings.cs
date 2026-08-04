@@ -60,7 +60,8 @@ public static class ReservationMappings
         this Reservation reservation,
         DateOnly? originalDate = null,
         TimeOnly? originalStartTime = null,
-        TimeOnly? originalEndTime = null)
+        TimeOnly? originalEndTime = null,
+        int? originalNumberOfGuests = null)
     {
         return new RescheduledReservationDetailResponse(
             reservation.Id,
@@ -78,6 +79,7 @@ public static class ReservationMappings
             reservation.ReservationInfo.EndTime.Value,
             reservation.ReservationCreatedAtUtc,
             reservation.ReservationUpdatedAtUtc,
+            originalNumberOfGuests ?? 0,
             reservation.ReservationInfo.Guests.Value,
             reservation.Tables.ToList().ToDetailResponse());
     }

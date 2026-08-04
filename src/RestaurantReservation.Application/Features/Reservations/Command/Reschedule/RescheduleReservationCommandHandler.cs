@@ -52,6 +52,7 @@ public sealed class RescheduleReservationCommandHandler(
         var originalReservationDate = reservationToReschedule.ReservationInfo.Date.Value;
         var originalReservationStartTime = reservationToReschedule.ReservationInfo.StartTime.Value;
         var originalReservationEndTime = reservationToReschedule.ReservationInfo.EndTime.Value;
+        var originalReservationNumberOfGuests = reservationToReschedule.ReservationInfo.Guests.Value;
 
         var restaurant = await context.Restaurants
             .AsNoTracking()
@@ -79,29 +80,67 @@ public sealed class RescheduleReservationCommandHandler(
                 isOpenResult.Error);
         }
 
-        var tableToReserve = await context.Tables
-            .Include(t => t.Reservations)
-            .Where(t => t.SeatsAtTable >= command.RescheduleNumberOfGuests && t.RestaurantId == restaurant.Id)
-            .OrderBy(t => t.SeatsAtTable)
-            .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId 
-            && r.ScheduledReservation.ReservationDay == command.RescheduleDate 
-            && r.ScheduledReservation.ReservationStart < command.RescheduleEndTime 
-            && command.RescheduleStartTime < r.ScheduledReservation.ReservationEnd), cancellationToken);
+        var tableToReserve = string.IsNullOrEmpty(command.RescheduleTableGroup)
+            ? await context.Tables
+                .Include(t => t.Reservations)
+                .Where(t => t.SeatsAtTable >= command.RescheduleNumberOfGuests && t.RestaurantId == restaurant.Id)
+                .OrderBy(t => t.SeatsAtTable)
+                .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId
+                                                                   && r.ScheduledReservation.ReservationDay ==
+                                                                   command.RescheduleDate
+                                                                   && r.ScheduledReservation.ReservationStart <
+                                                                   command.RescheduleEndTime
+                                                                   && command.RescheduleStartTime <
+                                                                   r.ScheduledReservation.ReservationEnd),
+                    cancellationToken)
+            : await context.Tables
+                .Include(t => t.Reservations)
+                .Where(t => t.SeatsAtTable >= command.RescheduleNumberOfGuests && t.RestaurantId == restaurant.Id 
+                                                                               && t.IsInTableGroup 
+                                                                               && !string.IsNullOrEmpty(t.TableGroupName)
+                                                                               && t.TableGroupName.ToLower().Equals(command.RescheduleTableGroup.ToLower()))
+                .OrderBy(t => t.SeatsAtTable)
+                .FirstOrDefaultAsync(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId
+                                                                   && r.ScheduledReservation.ReservationDay ==
+                                                                   command.RescheduleDate
+                                                                   && r.ScheduledReservation.ReservationStart <
+                                                                   command.RescheduleEndTime
+                                                                   && command.RescheduleStartTime <
+                                                                   r.ScheduledReservation.ReservationEnd),
+                    cancellationToken);
 
         if (tableToReserve is null)
         {
-            var tableGroupToReserve = await context.TableGroups
-                .Include(tg => tg.Tables)
-                .ThenInclude(tbl => tbl.Reservations)
-                .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.RescheduleNumberOfGuests)
-                .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
-                .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r => r.ReservationId != command.ReservationId
-                                                                         && r.ScheduledReservation.ReservationDay ==
-                                                                         command.RescheduleDate
-                                                                         && r.ScheduledReservation.ReservationStart <
-                                                                         command.RescheduleEndTime
-                                                                         && command.RescheduleStartTime <
-                                                                         r.ScheduledReservation.ReservationEnd)), cancellationToken);
+            var tableGroupToReserve = string.IsNullOrEmpty(command.RescheduleTableGroup)
+                ? await context.TableGroups
+                    .Include(tg => tg.Tables)
+                    .ThenInclude(tbl => tbl.Reservations)
+                    .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.RescheduleNumberOfGuests && tg.RestaurantId == restaurant.Id)
+                    .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
+                    .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r =>
+                        r.ReservationId != command.ReservationId
+                        && r.ScheduledReservation.ReservationDay ==
+                        command.RescheduleDate
+                        && r.ScheduledReservation.ReservationStart <
+                        command.RescheduleEndTime
+                        && command.RescheduleStartTime <
+                        r.ScheduledReservation.ReservationEnd)), cancellationToken)
+                : await context.TableGroups
+                    .Include(tg => tg.Tables)
+                    .ThenInclude(tbl => tbl.Reservations)
+                    .Where(tg => tg.Tables.Sum(t => t.SeatsAtTable) >= command.RescheduleNumberOfGuests && tg.RestaurantId == restaurant.Id)
+                    .Where(tg => tg.Tables.All(t => t.IsInTableGroup 
+                    && !string.IsNullOrEmpty(t.TableGroupName)
+                    && t.TableGroupName.ToLower().Equals(command.RescheduleTableGroup.ToLower())))
+                    .OrderBy(tg => tg.Tables.Sum(t => t.SeatsAtTable))
+                    .FirstOrDefaultAsync(tg => tg.Tables.All(t => !t.Reservations.Any(r =>
+                        r.ReservationId != command.ReservationId
+                        && r.ScheduledReservation.ReservationDay ==
+                        command.RescheduleDate
+                        && r.ScheduledReservation.ReservationStart <
+                        command.RescheduleEndTime
+                        && command.RescheduleStartTime <
+                        r.ScheduledReservation.ReservationEnd)), cancellationToken);
 
             if (tableGroupToReserve is null)
             {
@@ -111,20 +150,25 @@ public sealed class RescheduleReservationCommandHandler(
                 return Result.Failure<RescheduledReservationDetailResponse>(ReservationErrors.UnableToSecureTablesForReservation);
             }
 
-            foreach (var table in tableGroupToReserve.Tables)
+            var guests = command.RescheduleNumberOfGuests;
+            var index = 0;
+
+            while (guests > 0)
             {
-                var result = table.UpdateTableReservation(
-                    reservationToReschedule.Id,
-                    command.RescheduleDate,
-                    command.RescheduleStartTime,
-                    command.RescheduleEndTime);
+                var result = tableGroupToReserve.Tables.ElementAt(index++)
+                    .ReserveTable(
+                        command.RescheduleDate,
+                        command.RescheduleStartTime,
+                        command.RescheduleEndTime);
 
                 if (result.IsFailure)
                 {
                     return Result.Failure<RescheduledReservationDetailResponse>(result.Error);
                 }
+                
+                reservationTables.Add(result.Value);
 
-                reservationTables = result.Value;
+                guests -= result.Value.SeatsAtTable;
             }
         }
         else
@@ -187,7 +231,8 @@ public sealed class RescheduleReservationCommandHandler(
         var response = reservationToReschedule.ToRescheduledDetailResponse(
             originalReservationDate,
             originalReservationStartTime,
-            originalReservationEndTime);
+            originalReservationEndTime,
+            originalReservationNumberOfGuests);
 
         return Result.Success(response);
     }

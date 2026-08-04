@@ -16,5 +16,6 @@ public record RescheduledReservationDetailResponse(
     TimeOnly RescheduledReservationEndTime,
     DateTime ReservationCreatedAtUtc,
     DateTime? ReservationUpdatedAtUtc,
-    int NumberOfGuests, 
+    int OriginalNumberOfGuests, 
+    int RescheduledNumberOfGuests,
     List<ReservationTableDetailResponse> TablesInReservation);

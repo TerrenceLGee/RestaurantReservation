@@ -14,6 +14,7 @@ public static class Restaurant
     public static string DeleteTable => "/{restaurantId:guid}/tables/delete/{tableId:guid}";
     public static string GetTable => "/{restaurantId:guid}/tables/{tableId:guid}";
     public static string GetTables => "/{restaurantId:guid}/tables";
+    public static string GetTablesByGroupName => "/{restaurantId:guid}/tables/{tableGroupName}";
     public static string AddTableGroup => "/{restaurantId:guid}/tablegroups/add";
     public static string UpdateTableGroup => "/{restaurantId:guid}/tablegroups/update/{tableGroupId:guid}";
     public static string DeleteTableGroup => "/{restaurantId:guid}/tablegroups/delete/{tableGroupId:guid}";
