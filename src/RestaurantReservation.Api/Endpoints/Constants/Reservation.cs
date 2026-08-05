@@ -9,5 +9,6 @@ public static class Reservation
     public static string CancelReservation => "/cancelreservation";
     public static string CompleteReservation => "/completereservation";
     public static string GetAll => "/";
+    public static string GetAllByRestaurant => "/restaurants/{restaurantId:guid}/";
     public static string Get => "/{reservationId:guid}";
 }

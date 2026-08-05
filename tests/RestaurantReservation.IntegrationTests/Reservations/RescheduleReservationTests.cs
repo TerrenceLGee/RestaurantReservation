@@ -33,7 +33,7 @@ public class RescheduleReservationTests(IntegrationTestWebAppFactory factory) : 
                 TestContext.Current.CancellationToken);
 
         reservationResponse.IsSuccessStatusCode.Should().BeTrue();
-        reservationResponse.Should().Be(HttpStatusCode.OK);
+        reservationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         reservationResult.Should().NotBeNull();
         reservationResult.OriginalNumberOfGuests.Should().Be(3);
         reservationResult.RescheduledNumberOfGuests.Should().Be(6);
@@ -43,5 +43,29 @@ public class RescheduleReservationTests(IntegrationTestWebAppFactory factory) : 
         reservationResult.RescheduledReservationDate.Should().Be(new DateOnly(2026, 9, 2));
         reservationResult.RescheduledReservationStartTime.Should().Be(new TimeOnly(15,00));
         reservationResult.RescheduledReservationEndTime.Should().Be(new TimeOnly(17, 30));
+    }
+
+    [Fact]
+    public async Task
+        RescheduleReservation_Returns_StatusCode_400BadRequest_WhenTryingToReschedule_ReservationAtInvalidTime()
+    {
+        var reservationId = await ScheduleReservationForTesting();
+        const string restaurantName = "Red Lobster";
+        const string tableGroup = "Main Dining Room";
+
+        var reservationResponse = await Client.PutAsJsonAsync("/api/reservations/reschedulereservation", new
+            {
+                ReservationId = reservationId,
+                RestaurantName = restaurantName,
+                RescheduleDate = new DateOnly(2026, 9, 2),
+                RescheduleStartTime = new TimeOnly(7,00),
+                RescheduleEndTime = new TimeOnly(8, 30),
+                RescheduleNumberOfGuests = 6,
+                RescheduleTableGroup = tableGroup
+            },
+            TestContext.Current.CancellationToken);
+
+        reservationResponse.IsSuccessStatusCode.Should().BeFalse();
+        reservationResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

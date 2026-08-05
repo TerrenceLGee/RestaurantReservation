@@ -12,7 +12,7 @@ public static class SeedingResources
         var restaurant1 = Restaurant.Create("Red Lobster");
         restaurant1.SetSchedule([
             new RestaurantSchedule(WeekDay.Sunday, [new TimeOnly(11, 0), new TimeOnly(21, 00)]),
-            new RestaurantSchedule(WeekDay.Monday, [new TimeOnly(9, 00), new TimeOnly(21, 00)]),
+            new RestaurantSchedule(WeekDay.Monday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
             new RestaurantSchedule(WeekDay.Tuesday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
             new RestaurantSchedule(WeekDay.Wednesday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
             new RestaurantSchedule(WeekDay.Thursday, [new TimeOnly(9, 0), new TimeOnly(22, 0)]),
@@ -140,7 +140,7 @@ public static class SeedingResources
         var tables = new List<Table>();
         for (int i = 0; i < numberOfTables; i++)
         {
-            var seatsAtTable = Random.Shared.Next(1, 9);
+            var seatsAtTable = Random.Shared.Next(1, 5) * 2;
             tables.Add(restaurant.AddTable(seatsAtTable));
         }
 

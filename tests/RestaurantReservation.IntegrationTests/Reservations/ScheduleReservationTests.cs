@@ -24,7 +24,7 @@ public class ScheduleReservationTests(IntegrationTestWebAppFactory factory) : Ba
                 CustomerFirstName = "Dennis",
                 CustomerLastName = "Edwards",
                 CustomerEmail = "customer@example.com",
-                CustomerPhone = "123-456-7890",
+                CustomerPhone = "555-123-4567",
                 ReservationDate = new DateOnly(2026, 08, 29),
                 ReservationStartTime = new TimeOnly(15, 30),
                 ReservationEndTime = new TimeOnly(18, 30),

@@ -63,30 +63,4 @@ public class Table : BaseEntity
 
         return Result.Success(reservationTable);
     }
-
-    public Result<List<ReservationTable>> UpdateTableReservation(
-        Guid reservationId,
-        DateOnly reservationDay,
-        TimeOnly reservationStartTime,
-        TimeOnly reservationEndTime)
-    {
-        var reservationTablesToUpdate = Reservations.Where(r => r.ReservationId == reservationId)
-            .ToList();
-        if (reservationTablesToUpdate.Count == 0)
-        {
-            return Result.Failure<List<ReservationTable>>(TableErrors.TableCannotBeReserved);
-        }
-
-        var updatedReservation = new TableReservation(
-            reservationDay,
-            reservationStartTime,
-            reservationEndTime) { ReservationId = reservationId };
-
-        foreach (var table in reservationTablesToUpdate)
-        {
-            table.UpdateReservation(updatedReservation);
-        }
-
-        return reservationTablesToUpdate;
-    }
 }

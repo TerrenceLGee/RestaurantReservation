@@ -8,6 +8,7 @@ using RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 using RestaurantReservation.Application.Features.Reservations.Query.Get;
 using RestaurantReservation.Application.Features.Reservations.Query.GetAll;
 using RestaurantReservation.Domain.Reservations.Events;
+using RestaurantReservation.Domain.Users;
 
 namespace RestaurantReservation.Api.Endpoints;
 
@@ -39,6 +40,12 @@ public static class ReservationEndpoints
         api.MapGet(Constants.Reservation.GetAll, GetAll)
             .WithName("GetAllReservations")
             .WithSummary("Get all your reservations");
+
+        api.MapGet(Constants.Reservation.GetAllByRestaurant, GetAllByRestaurant)
+            .WithName("GetAllRestaurantReservations")
+            .WithSummary("Get all reservations tied to a restaurant in the system (Admins Only)")
+            .RequireAuthorization(policy =>
+                policy.RequireRole(Roles.Admin));
 
         api.MapGet(Constants.Reservation.Get, Get)
             .WithName("GetReservation")
@@ -158,6 +165,29 @@ public static class ReservationEndpoints
             pageSize ?? 10,
             sortBy,
             restaurantName,
+            status);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? TypedResults.Ok(result.Value)
+            : result.ToProblemDetails();
+    }
+
+    private static async Task<IResult> GetAllByRestaurant(
+        Guid restaurantId,
+        int? page,
+        int? pageSize,
+        string? sortBy,
+        string? status,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllRestaurantReservationsQuery(
+            restaurantId,
+            page ?? 1,
+            pageSize ?? 10,
+            sortBy,
             status);
 
         var result = await sender.Send(query, cancellationToken);

@@ -159,7 +159,8 @@ public sealed class RescheduleReservationCommandHandler(
                     .ReserveTable(
                         command.RescheduleDate,
                         command.RescheduleStartTime,
-                        command.RescheduleEndTime);
+                        command.RescheduleEndTime,
+                        reservationToReschedule.Id);
 
                 if (result.IsFailure)
                 {
@@ -170,21 +171,23 @@ public sealed class RescheduleReservationCommandHandler(
 
                 guests -= result.Value.SeatsAtTable;
             }
+
+            reservationTables = [.. reservationTables.OrderByDescending(rt => rt.SeatsAtTable)];
         }
         else
         {
-            var result = tableToReserve.UpdateTableReservation(
-                reservationToReschedule.Id,
+            var result = tableToReserve.ReserveTable(
                 command.RescheduleDate,
                 command.RescheduleStartTime,
-                command.RescheduleEndTime);
+                command.RescheduleEndTime,
+                reservationToReschedule.Id);
 
             if (result.IsFailure)
             {
                 return Result.Failure<RescheduledReservationDetailResponse>(result.Error);
             }
 
-            reservationTables = result.Value;
+            reservationTables.Add(result.Value);
         }
 
         var rescheduledReservationResult = reservationToReschedule.RescheduleReservation(
@@ -216,6 +219,7 @@ public sealed class RescheduleReservationCommandHandler(
             reservationToReschedule.AddReservationTable(table);
         }
 
+        context.Reservations.Update(reservationToReschedule);
         await context.SaveChangesAsync(cancellationToken);
         
         logger.LogInformation("{Email} just updated a reservation. Invaliding the cache for key: {Key} and {TKey} and {TGKey}",
