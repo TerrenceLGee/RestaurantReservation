@@ -77,6 +77,31 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
         return reservationResult.ReservationId;
     }
 
+    protected async Task ScheduleReservationsForTesting(string restaurantName)
+    {
+        await LoginAndSetAuthenticationAsync("customer@example.com", "Pa$$w0rd");
+
+        for (int i = 1; i <= 31; i++)
+        {
+            var reservationResponse = await Client.PostAsJsonAsync("/api/reservations/schedulereservation", new
+            {
+                RestaurantName = restaurantName,
+                CustomerFirstName = "Dennis",
+                CustomerLastName = "Edwards",
+                CustomerEmail = "customer@example.com",
+                CustomerPhone = "555-123-4567",
+                ReservationDate = new DateOnly(2026, 10, i),
+                ReservationStartTime = new TimeOnly(18, 00),
+                ReservationEndTime = new TimeOnly(19, 30),
+                NumberOfGuests = 3,
+                TableGroup = "Main Dining Room"
+            },
+                TestContext.Current.CancellationToken);
+
+            reservationResponse.EnsureSuccessStatusCode();
+        }
+    }
+
     protected async Task<Guid> CreateRestaurantForRetrieval(string name)
     {
         await LoginAndSetAuthenticationAsync("admin@example.com", "Pa$$w0rd");
