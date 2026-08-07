@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
-
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
@@ -63,5 +61,38 @@ public class UpdateRestaurantCommandHandlerTests
         updatedRestaurant.Id.Should().Be(restaurant.Id);
         updatedRestaurant.Schedule.ElementAt(0).DailyHours[0].Should().Be(new TimeOnly(9, 0));
         updatedRestaurant.Name.Should().Be("International House Of Culinary Delights");
+    }
+
+    [Fact]
+    public async Task
+        UpdateRestaurantCommandHandler_Should_Return_Failure_Result_When_TryingTo_Update_NonExistent_Restaurant()
+    {
+        var restaurantId = Guid.CreateVersion7();
+
+        await using var context = TestDbContextFactory.Create();
+        
+        var schedule = new RestaurantSchedule[]
+        {
+            new(WeekDay.Sunday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
+            new(WeekDay.Monday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
+            new(WeekDay.Tuesday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
+            new(WeekDay.Wednesday, [new TimeOnly(9, 0), new TimeOnly(21, 00)]),
+            new(WeekDay.Thursday, [new TimeOnly(9, 0), new TimeOnly(22, 0)]),
+            new(WeekDay.Friday, [new TimeOnly(9, 0), new TimeOnly(22, 30)]),
+            new(WeekDay.Saturday, [new TimeOnly(9, 0), new TimeOnly(23, 00)])
+        };
+
+        var command = new UpdateRestaurantCommand(
+            restaurantId,
+            null,
+            schedule);
+
+        var handler = new UpdateRestaurantCommandHandler(context, _cache, _logger);
+
+        var result = await handler.Handle(command, TestContext.Current.CancellationToken);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.ErrorType.Should().Be(ErrorType.NotFound);
+        result.Error.Code.Should().Be("Restaurant.NotFound");
     }
 }
