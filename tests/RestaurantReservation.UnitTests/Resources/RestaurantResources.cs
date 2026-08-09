@@ -77,6 +77,27 @@ public static class RestaurantResources
         return (restaurant, table);
     }
 
+    public static (Restaurant restaurant, TableGroup tableGroup, List<Table> tables) GetTableGroupToAdd(
+        string groupName,
+        int numberOfTables,
+        int seatsAtTable)
+    {
+        var command = AddRestaurant();
+
+        var restaurant = GetRestaurantToAdd(command);
+
+        var tables = new List<Table>();
+
+        for (int i = 0; i < numberOfTables; i++)
+        {
+            tables.Add(restaurant.AddTable(seatsAtTable));
+        }
+
+        var tableGroup = restaurant.AddTableGroup(groupName, tables);
+
+        return (restaurant, tableGroup, tables);
+    }
+
     private static List<AddRestaurantCommand> InitializeRestaurants()
     {
         var initializers = new List<AddRestaurantCommand>

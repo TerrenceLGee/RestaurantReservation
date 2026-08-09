@@ -66,10 +66,10 @@ public sealed class UpdateTableGroupCommandHandler(
 
         List<Table>? tables = null;
         
-        if (command.NumberOfTables.HasValue && command.NumberOfSeats.HasValue)
+        if (command is { NumberOfTablesToAdd: not null, NumberOfSeats: not null })
         {
-            tables = new List<Table>();
-            for (int i = 0; i < command.NumberOfTables.Value; i++)
+            tables = [];
+            for (int i = 0; i < command.NumberOfTablesToAdd.Value; i++)
             {
                 tables.Add(restaurant.AddTable(command.NumberOfSeats.Value));
             }

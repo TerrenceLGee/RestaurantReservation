@@ -343,7 +343,7 @@ public static class RestaurantEndpoints
             restaurantId,
             tableGroupId,
             query.GroupName,
-            query.NumberOfTables,
+            query.NumberOfTablesToAdd,
             query.NumberOfSeats);
 
         var result = await sender.Send(command, cancellationToken);

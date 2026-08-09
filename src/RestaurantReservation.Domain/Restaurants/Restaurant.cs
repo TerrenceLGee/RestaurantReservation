@@ -103,11 +103,12 @@ public class Restaurant : BaseEntity
         return Result.Success();
     }
 
-    public void AddTableGroup(string name, List<Table> tables)
+    public TableGroup AddTableGroup(string name, List<Table> tables)
     {
         var tableGroup = TableGroup.Create(Id, name);
         tableGroup.AddTables(tables);
         TableGroups.Add(tableGroup);
+        return tableGroup;
     }
 
     public Result RestaurantIsOpen(

@@ -14,14 +14,14 @@ using RestaurantReservation.UnitTests.Resources;
 
 namespace RestaurantReservation.UnitTests.Restaurants.Tables;
 
-public class GetAllTablesByRestaurantQueryHandlerTests
+public class GetAllTablesByTableGroupQueryHandlerTests
 {
     private readonly HybridCache _cache = Substitute.For<HybridCache>();
 
-    private readonly ILogger<GetAllTablesByRestaurantQueryHandler> _logger =
-        Substitute.For<ILogger<GetAllTablesByRestaurantQueryHandler>>();
+    private readonly ILogger<GetAllTablesByTableGroupQueryHandler> _logger =
+        Substitute.For<ILogger<GetAllTablesByTableGroupQueryHandler>>();
 
-    public GetAllTablesByRestaurantQueryHandlerTests()
+    public GetAllTablesByTableGroupQueryHandlerTests()
     {
         _cache.GetOrCreateAsync(
                 Arg.Any<string>(),
@@ -40,7 +40,7 @@ public class GetAllTablesByRestaurantQueryHandlerTests
     }
 
     [Fact]
-    public async Task GetAllTablesByRestaurant_Returns_Result_Of_PagedResult_Page_2_PageSize_12_TableResponse_OnSuccess()
+    public async Task GetAllTablesByTableGroup_Returns_Result_Of_PagedResult_Page_2_PageSize_3_TableResponse_OnSuccess()
     {
         await using var context = TestDbContextFactory.Create();
 
@@ -50,33 +50,44 @@ public class GetAllTablesByRestaurantQueryHandlerTests
         await context.Restaurants.AddAsync(restaurant, TestContext.Current.CancellationToken);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var command = new GetAllTablesByRestaurantQuery(
-            restaurant.Id,
-            2,
-            12);
+        const string groupName = "Family Dining Room";
 
-        var handler = new GetAllTablesByRestaurantQueryHandler(context, _cache, _logger);
+        var command = new GetAllTablesByTableGroupQuery(
+            restaurant.Id, 
+            groupName, 
+            2, 
+            3);
+
+        var handler = new GetAllTablesByTableGroupQueryHandler(context, _cache, _logger);
+
         var result = await handler.Handle(command, TestContext.Current.CancellationToken);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.TotalCount.Should().Be(132);
-        result.Value.TotalPages.Should().Be(11);
         result.Value.HasNextPage.Should().BeTrue();
         result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.Items.Count.Should().Be(12);
+        result.Value.TotalCount.Should().Be(30);
+        result.Value.TotalPages.Should().Be(10);
+        result.Value.Items.Count.Should().Be(3);
+        result.Error.ErrorType.Should().Be(ErrorType.None);
     }
 
     [Fact]
-    public async Task GetAllTablesByRestaurant_Returns_FailureResult_When_Restaurant_Is_Invalid()
+    public async Task GetAllTablesByTableGroup_Returns_FailureResult_When_TableGroup_Is_NonExistent()
     {
         await using var context = TestDbContextFactory.Create();
 
-        var restaurantId = Guid.CreateVersion7();
+        var addRestaurantCommand = RestaurantResources.AddRestaurant();
+        var restaurant = RestaurantResources.GetRestaurantToAdd(addRestaurantCommand);
 
-        var command = new GetAllTablesByRestaurantQuery(restaurantId);
+        await context.Restaurants.AddAsync(restaurant, TestContext.Current.CancellationToken);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new GetAllTablesByRestaurantQueryHandler(context, _cache, _logger);
+        const string groupName = "C# Developers";
+
+        var command = new GetAllTablesByTableGroupQuery(restaurant.Id, groupName);
+
+        var handler = new GetAllTablesByTableGroupQueryHandler(context, _cache, _logger);
 
         var result = await handler.Handle(command, TestContext.Current.CancellationToken);
 

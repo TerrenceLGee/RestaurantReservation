@@ -51,7 +51,7 @@ public sealed class AddTableGroupCommandHandler(
 
         var tableGroup = TableGroup.Create(command.RestaurantId, command.Name);
 
-        if (command.NumberOfTables.HasValue && command.NumberOfSeats.HasValue)
+        if (command is { NumberOfTables: not null, NumberOfSeats: not null })
         {
             var tables = new List<Table>();
 

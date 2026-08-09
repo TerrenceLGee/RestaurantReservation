@@ -27,7 +27,7 @@ public class UpdateTableGroupTests(IntegrationTestWebAppFactory factory) : BaseI
         var tableGroupResponse = await Client.PutAsJsonAsync($"/api/restaurants/{restaurantId}/tablegroups/update/{tableGroupId}", new
             {
                 GroupName = updatedGroupName,
-                NumberOfTables = 30,
+                NumberOfTablesToAdd = 30,
                 NumberOfSeats = 6
             },
             TestContext.Current.CancellationToken);
