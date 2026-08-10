@@ -29,9 +29,11 @@ public sealed class ReservationCanceledEventHandler(
                    $"{notification.ReservationStartTime} to {notification.ReservationEndTime} has been canceled as per your request " +
                    $"on {notification.ReservationCanceledAtUtc}. No further action is necessary on your part.";
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Reservation Canceled";
+        const string subject = "Reservation Canceled";
+        const string sender = "Restaurant Reservation Service";
 
         var emailInfo = new EmailInfo(
+            sender,
             name,
             notification.Email,
             NotificationConstants.EmailSender,

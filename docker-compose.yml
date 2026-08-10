@@ -1,4 +1,28 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+      ASPNETCORE_ENVIRONMENT: Docker
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=reservationDB;Username=postgres;Password=postgres"
+      ConnectionStrings__Redis: "redis:6379,password=redis"
+      Seq__ServerUrl: "http://seq:5341"
+      Smtp__Host: "mailpit"
+      Smtp__Port: "1025"
+    depends_on:
+      postgres:
+        condition: "service_healthy"
+      redis:
+        condition: "service_started"
+      seq:
+        condition: "service_started"
+      mailpit:
+        condition: "service_started"
   postgres:
     image: postgres:17-alpine
     container_name: postgres
@@ -12,7 +36,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d restaurantDB"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d reservationDB"]
       interval: 10s
       timeout: 5s
       retries: 5

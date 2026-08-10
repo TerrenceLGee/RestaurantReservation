@@ -16,6 +16,7 @@ public class Reservation : BaseEntity
     public string? CustomerId { get; init; }
     public ApplicationUser? Customer { get; set; }
     public string RestaurantName { get; init; }
+    public string? TableGroup { get; private set; }
     public CustomerContactInfo CustomerContactInfo { get; private set; } = null!;
     public ReservationInfo ReservationInfo { get; private set; } = null!;
     public ReservationStatus Status { get; private set; }
@@ -32,6 +33,7 @@ public class Reservation : BaseEntity
         Guid restaurantId,
         string customerId,
         string restaurantName,
+        string? tableGroup,
         CustomerContactInfo customerInfo,
         ReservationStatus status,
         ReservationInfo reservationInfo) : base(id)
@@ -39,6 +41,7 @@ public class Reservation : BaseEntity
         RestaurantId = restaurantId;
         CustomerId = customerId;
         RestaurantName = restaurantName;
+        TableGroup = tableGroup;
         CustomerContactInfo = customerInfo;
         Status = status;
         ReservationInfo = reservationInfo;
@@ -56,7 +59,8 @@ public class Reservation : BaseEntity
         DateOnly reservationDate,
         TimeOnly reservationStartTime,
         TimeOnly reservationEndTime,
-        int numberOfGuests)
+        int numberOfGuests,
+        string? tableGroup)
     {
         var firstResult = CheckCustomerContactInfo(
             customerFirstName,
@@ -90,6 +94,7 @@ public class Reservation : BaseEntity
             restaurantId,
             customerId,
             restaurantName,
+            tableGroup,
             customerInfo,
             ReservationStatus.Scheduled,
             reservationInfo));

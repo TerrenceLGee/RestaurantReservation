@@ -30,9 +30,11 @@ public sealed class ReservationCompletedEventHandler(
                    $" completed on {notification.ReservationCompletedAtUtc:F}. We hope that you enjoyed your " +
                    $"time at {notification.RestaurantName} and will visit again soon!";
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Reservation Completed";
+        const string subject = "Reservation Completed";
+        const string sender = "Restaurant Reservation Service";
 
         var emailInfo = new EmailInfo(
+            sender,
             name,
             notification.Email,
             NotificationConstants.EmailSender,

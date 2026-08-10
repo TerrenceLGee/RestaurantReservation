@@ -26,9 +26,11 @@ public sealed class RegistrationSuccessfulEventHandler(
                    $"You are now able to schedule a reservation with any one of the restaurants in our system. " +
                    $"Thank you for joining our service. Have a great day!";
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Registration Successful!";
+        const string subject = "Registration Successful!";
+        const string sender = "Restaurant Reservation Service";
 
         var emailInfo = new EmailInfo(
+            sender,
             name,
             notification.Email,
             NotificationConstants.EmailSender,

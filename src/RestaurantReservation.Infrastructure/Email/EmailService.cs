@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using MimeKit;
 
@@ -7,14 +8,19 @@ using RestaurantReservation.Application.Features;
 
 namespace RestaurantReservation.Infrastructure.Email;
 
-public class EmailService(ISmtpClientFactory smtpClientFactory, ILogger<EmailService> logger) : IEmailService
+public class EmailService(
+    ISmtpClientFactory smtpClientFactory, 
+    IOptions<SmtpOptions> smtpOptions,
+    ILogger<EmailService> logger) : IEmailService
 {
+    private readonly SmtpOptions _smtpOptions = smtpOptions.Value;
+    
     public async Task SendEmailAsync(EmailInfo emailInfo, CancellationToken cancellationToken = default)
     {
         try
         {
             var msg = new MimeMessage();
-            msg.From.Add(new MailboxAddress("Restaurant Reservations", emailInfo.From));
+            msg.From.Add(new MailboxAddress(emailInfo.SenderName, emailInfo.From));
             msg.To.Add(new MailboxAddress($"{emailInfo.RecipientName}", $"{emailInfo.To}"));
             msg.Subject = $"{emailInfo.Subject}";
             var bodyBuilder = new BodyBuilder
@@ -24,7 +30,7 @@ public class EmailService(ISmtpClientFactory smtpClientFactory, ILogger<EmailSer
             msg.Body = bodyBuilder.ToMessageBody();
 
             using var smtp = smtpClientFactory.Create();
-            await smtp.ConnectAsync("localhost", 1025, false, cancellationToken);
+            await smtp.ConnectAsync(_smtpOptions.Host, _smtpOptions.Port, false, cancellationToken);
             await smtp.SendAsync(msg, cancellationToken);
             await smtp.DisconnectAsync(true, cancellationToken);
         }

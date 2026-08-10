@@ -28,9 +28,11 @@ public sealed class ReservationScheduledEventHandler(
                    $"to {notification.ReservationEndTime} with a party of {notification.NumberOfGuests} guests.";
 
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Reservation Scheduled";
+        const string subject = "Reservation Scheduled";
+        const string sender = "Restaurant Reservation Service";
 
         var emailInfo = new EmailInfo(
+            sender,
             name,
             notification.Email,
             NotificationConstants.EmailSender,

@@ -33,9 +33,11 @@ public sealed class ReservationRescheduledEventHandler(
                    $"party of {notification.NumberOfGuests} guests.";
 
         var name = $"{notification.FirstName} {notification.LastName}";
-        var subject = "Reservation Rescheduled";
+        const string subject = "Reservation Rescheduled";
+        const string sender = "Restaurant Reservation Service";
 
         var emailInfo = new EmailInfo(
+            sender,
             name,
             notification.Email,
             NotificationConstants.EmailSender,

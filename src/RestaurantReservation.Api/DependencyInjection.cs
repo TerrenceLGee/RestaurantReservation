@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.OpenApi;
 
 using RestaurantReservation.Api.Handlers;
+using RestaurantReservation.Application.Abstractions;
 using RestaurantReservation.Infrastructure.Persistence;
 
 using Serilog;
@@ -86,6 +87,8 @@ public static class DependencyInjection
             options.MaximumPayloadBytes = 1024 * 1024;
         });
 
+        services.Configure<SmtpOptions>(
+            configuration.GetSection("Smtp"));
         return services;
     }
 }

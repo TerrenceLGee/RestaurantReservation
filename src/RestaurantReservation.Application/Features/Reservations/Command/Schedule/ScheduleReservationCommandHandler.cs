@@ -59,9 +59,7 @@ public sealed class ScheduleReservationCommandHandler(
             logger.LogWarning("Restaurant {Name} is not opened at the time {Email} wishes to schedule a reservation, so no reservation was made",
                 command.RestaurantName,
                 command.CustomerEmail);
-            return Result.Failure<ReservationDetailResponse>(RestaurantErrors.RestaurantClosedToday(
-                restaurant.Name, 
-                command.ReservationDate));
+            return Result.Failure<ReservationDetailResponse>(isOpenResult.Error);
         }
 
         var tableToReserve = string.IsNullOrEmpty(command.TableGroup)
@@ -168,7 +166,8 @@ public sealed class ScheduleReservationCommandHandler(
             command.ReservationDate,
             command.ReservationStartTime,
             command.ReservationEndTime,
-            command.NumberOfGuests);
+            command.NumberOfGuests,
+            command.TableGroup);
 
         if (reservationResult.IsFailure)
         {

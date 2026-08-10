@@ -1,4 +1,6 @@
+using RestaurantReservation.Application.Features.Reservations.Command.Schedule;
 using RestaurantReservation.Application.Features.Restaurants.Command.Add;
+using RestaurantReservation.Domain.Reservations;
 using RestaurantReservation.Domain.Restaurants;
 using RestaurantReservation.Domain.Tables;
 
@@ -190,5 +192,41 @@ public static class RestaurantResources
         };
 
         return initializers;
+    }
+
+    public static ScheduleReservationCommand AddReservation(string restaurantName, string? groupName = null)
+    {
+        return new ScheduleReservationCommand(
+            restaurantName,
+            "Dennis",
+            "Edwards",
+            "customer@example.com",
+            "555-123-4567",
+            new DateOnly(2026, 10, 1),
+            new TimeOnly(15,30),
+            new TimeOnly(17, 30),
+            3,
+            groupName);
+    }
+
+    public static Reservation? GetReservationToAdd(Guid restaurantId, ScheduleReservationCommand command)
+    {
+        var reservationResult = Reservation.MakeReservation(
+            restaurantId,
+            command.RestaurantName,
+            command.CustomerFirstName,
+            command.CustomerLastName,
+            command.CustomerEmail,
+            command.CustomerPhone,
+            command.CustomerPhone,
+            command.ReservationDate,
+            command.ReservationStartTime,
+            command.ReservationEndTime,
+            command.NumberOfGuests,
+            command.TableGroup);
+
+        return reservationResult.IsSuccess
+            ? reservationResult.Value
+            : null;
     }
 }
