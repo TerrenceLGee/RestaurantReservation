@@ -95,3 +95,6 @@ For those endpoints that require authention/authorization there will be a drop-d
 
 ## Areas To Improve Upon
 There is always room from improvement especially in software development. While I have learned a tremendous amount and have made many improvements in my own skillset while implementing this project. There is always so much more to learn. I know there are areas of this project that may not be optimal or could have been implemented better. So as with each project I will take what I learned and apply it further and keep learning and improving.
+
+## Helpful Resources Used 
+[codewithmukesh](https://codewithmukesh.com/courses/dotnet-webapi-zero-to-hero/lessons/)
