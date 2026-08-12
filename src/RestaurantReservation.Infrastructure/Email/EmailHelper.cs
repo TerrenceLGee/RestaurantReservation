@@ -35,7 +35,7 @@ public static class EmailHelper
 
                 <tr>
                 <td style="background-color:#f9f9f9; padding: 16px 32px; border-top: 1px solid #eeeeee; border-radius: 0 0 8px 8px;">
-                <p style="margin:0; font-size:12px; color:#999999; text-align:center;">This email was send from the Restaurant Reservation App</p>
+                <p style="margin:0; font-size:12px; color:#999999; text-align:center;">This email was sent from the Restaurant Reservation App</p>
                 </td>
                 </tr>
                 </table>
