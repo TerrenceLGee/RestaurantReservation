@@ -24,9 +24,11 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
     protected readonly IMediator Sender;
     protected readonly ApplicationDbContext Context;
     protected readonly HttpClient Client;
+    protected IntegrationTestWebAppFactory Factory { get; }
 
     protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
     {
+        Factory = factory;
         IServiceScope scope = factory.Services.CreateScope();
         Client = factory.CreateClient();
         Sender = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -45,6 +47,12 @@ public class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
 
         Client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", loginResult!.AccessToken);
+    }
+
+    protected ApplicationDbContext CreateContext()
+    {
+        var scope = Factory.Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     }
 
     protected async Task<Guid> ScheduleReservationForTesting()

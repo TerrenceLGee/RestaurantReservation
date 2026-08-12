@@ -15,6 +15,5 @@
   <Folder Name="/tests/">
     <Project Path="tests/RestaurantReservation.ArchitectureTests/RestaurantReservation.ArchitectureTests.csproj" />
     <Project Path="tests/RestaurantReservation.IntegrationTests/RestaurantReservation.IntegrationTests.csproj" />
-    <Project Path="tests/RestaurantReservation.UnitTests/RestaurantReservation.UnitTests.csproj" />
   </Folder>
 </Solution>

@@ -44,19 +44,13 @@ public class Table : BaseEntity
     public Result<ReservationTable> ReserveTable(
         DateOnly reservationDate,
         TimeOnly startOfParty,
-        TimeOnly endOfParty,
-        Guid? reservationId = null)
+        TimeOnly endOfParty)
     {
         var tableReservation = new TableReservation(
             reservationDate,
             startOfParty,
             endOfParty);
-
-        if (reservationId.HasValue)
-        {
-            tableReservation.ReservationId = reservationId.Value;
-        }
-
+        
         var reservationTable = new ReservationTable { TableId = Id, ScheduledReservation = tableReservation, SeatsAtTable = SeatsAtTable};
         
         Reservations.Add(reservationTable);

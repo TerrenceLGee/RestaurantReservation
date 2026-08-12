@@ -179,7 +179,6 @@ public sealed class ScheduleReservationCommandHandler(
 
         if (reservationTable is not null)
         {
-            reservationTable.ScheduledReservation.ReservationId = reservationResult.Value.Id;
             reservationResult.Value.AddReservationTable(reservationTable);
             await context.ReservationTables.AddAsync(reservationTable, cancellationToken);
         }
@@ -187,7 +186,6 @@ public sealed class ScheduleReservationCommandHandler(
         {
             foreach (var table in reservationTables)
             {
-                table.ScheduledReservation.ReservationId = reservationResult.Value.Id;
                 reservationResult.Value.AddReservationTable(table);
             }
 

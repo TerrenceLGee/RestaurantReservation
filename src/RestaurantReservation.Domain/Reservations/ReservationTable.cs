@@ -11,9 +11,4 @@ public class ReservationTable
     public Table? Table { get; set; }
     public TableReservation ScheduledReservation { get; set; }
     public int SeatsAtTable { get; set; }
-
-    public void UpdateReservation(TableReservation updatedReservation)
-    {
-        ScheduledReservation = updatedReservation;
-    }
 }

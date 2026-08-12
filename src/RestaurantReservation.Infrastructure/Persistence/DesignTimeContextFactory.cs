@@ -9,6 +9,7 @@ public class DesignTimeContextFactory : IDesignTimeDbContextFactory<ApplicationD
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql("Host=localhost;Port=5432;Database=reservationDB;Username=postgres;Password=postgres")
+            .UseSnakeCaseNamingConvention()
             .Options;
 
         return new ApplicationDbContext(options);

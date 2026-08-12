@@ -83,7 +83,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUser, CurrentUser>();
     }
 
-    public static void AddEmail(this IServiceCollection services)
+    private static void AddEmail(this IServiceCollection services)
     {
         services.AddTransient<IEmailService, EmailService>();
         services.AddTransient<ISmtpClientFactory, SmtpClientFactory>();

@@ -12,10 +12,7 @@ public class ReservationTableConfiguration : IEntityTypeConfiguration<Reservatio
         builder.ToTable("reservation_tables");
         builder.HasKey(rt => new { rt.ReservationId, rt.TableId });
 
-        builder.OwnsOne(rt => rt.ScheduledReservation, s =>
-        {
-            s.ToJson();
-        });
+        builder.OwnsOne(rt => rt.ScheduledReservation);
 
         builder.HasOne(rt => rt.Reservation)
             .WithMany(r => r.Tables)

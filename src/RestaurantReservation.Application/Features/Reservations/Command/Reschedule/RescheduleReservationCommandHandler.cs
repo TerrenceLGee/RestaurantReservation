@@ -38,7 +38,8 @@ public sealed class RescheduleReservationCommandHandler(
         
         var reservationToReschedule = await context.Reservations
             .Include(r => r.Tables)
-            .FirstOrDefaultAsync(r => r.Id == command.ReservationId, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == command.ReservationId 
+                                      && r.RestaurantName.ToLower().Equals(command.RestaurantName.ToLower()), cancellationToken);
 
         if (reservationToReschedule is null)
         {
@@ -159,8 +160,7 @@ public sealed class RescheduleReservationCommandHandler(
                     .ReserveTable(
                         command.RescheduleDate,
                         command.RescheduleStartTime,
-                        command.RescheduleEndTime,
-                        reservationToReschedule.Id);
+                        command.RescheduleEndTime);
 
                 if (result.IsFailure)
                 {
@@ -179,8 +179,7 @@ public sealed class RescheduleReservationCommandHandler(
             var result = tableToReserve.ReserveTable(
                 command.RescheduleDate,
                 command.RescheduleStartTime,
-                command.RescheduleEndTime,
-                reservationToReschedule.Id);
+                command.RescheduleEndTime);
 
             if (result.IsFailure)
             {

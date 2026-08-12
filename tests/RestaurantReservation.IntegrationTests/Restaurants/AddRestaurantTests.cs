@@ -17,7 +17,7 @@ public class AddRestaurantTests(IntegrationTestWebAppFactory factory) : BaseInte
     {
         await LoginAndSetAuthenticationAsync("admin@example.com", "Pa$$w0rd");
 
-        var restaurantName = "International House Of Culinary Delights";
+        const string restaurantName = "International House Of Culinary Delights";
         
         var restaurantResponse = await Client.PostAsJsonAsync("/api/restaurants/add", new
         {
