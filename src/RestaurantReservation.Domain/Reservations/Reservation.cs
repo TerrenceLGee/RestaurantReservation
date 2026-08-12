@@ -100,30 +100,6 @@ public class Reservation : BaseEntity
             reservationInfo));
     }
 
-    public Result UpdateCustomerContactInfo(
-        string customerFirstName,
-        string customerLastName,
-        string customerEmail,
-        string customerPhone)
-    {
-        var validationResult = CheckCustomerContactInfo(
-            customerFirstName,
-            customerLastName,
-            customerEmail,
-            customerPhone);
-
-        if (validationResult.IsFailure) return validationResult;
-
-        CustomerContactInfo = new CustomerContactInfo(
-            new FirstName(customerFirstName),
-            new LastName(customerLastName),
-            new EmailAddress(customerEmail),
-            new TelephoneNumber(customerPhone));
-
-        ReservationUpdatedAtUtc = DateTime.UtcNow;
-        return Result.Success();
-    }
-
     public Result RescheduleReservation(
         DateOnly reservationDate,
         TimeOnly reservationStartTime,

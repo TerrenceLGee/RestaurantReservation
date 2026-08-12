@@ -77,6 +77,15 @@ Since this is a learning project and not an actual restaurant reservation system
 ## Testing
 This project uses both Architecture tests to ensure/enfore dependencies and Integration tests to test the entire application stack. The decision to exclude Unit Tests was deliberate for the reason being as I was initially writing them. I realized I was testing much of the same logic that was better tested via integration tests. 
 
+# What Else Is Implemented
+- Pagination
+- Sorting
+- Filtering
+- Result Pattern
+
+# A Note About Scalar
+For those endpoints that require authention/authorization there will be a drop-down that says ***Auth Type*** please be sure to select ***Bearer*** and then paste the JWT Token where it says ***Bearer Token***.
+
 ## Things I Learned 
 - Clean Architecture - This was obviously the most important aspect of this project/application. I learned how dependencies should flow, and how separating different concerns (e.g. business logic, from database logic) makes for a much cleaner codebase.
 - Docker - This was perhaps the second most important aspect of this project, or possibly it can be considered as tied for first with Clean Architecture. This is the first project from the C# Academy that I have personally done that required the use of docker. At first this was challenging because it was admittedly new to me, but once I got the hang of it and actually dockerized my own application and ran it entirely containerized I saw both the value and power of using Docker. It is also true as I read that Docker solved the age-old problem of "It works on my machine but not on others".
