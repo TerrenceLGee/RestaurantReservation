@@ -31,6 +31,16 @@ docker compose up -d --build
 | Seq (logs)                         | http://localhost:8081           |
 | Mailpit (email)                    | http://localhost:8025           |
 
+
+There is a default admin and customer user seeded into the database as well as restaurants/tables etc.
+
+***Default User Information***
+
+| Username                           | Password               |
+|------------------------------------|------------------------|
+| admin@example.com                  | Pa$$w0rd               |
+| customer@example.com               | Pa$$w0rd               |
+
 ***Architecture Overview***
 This project follows Clean Architecture Principals (with some Domain-Driven-Design thrown in). This application is organized into four layers:
 - ***Domain*** - Core business entiries and rules (Restaurant, Table, TableGroup, Reservation etc.). This layer has no dependencies on any other layers. Business invariants (e.g. A table can only be added to a table group if they belong to the same restaurant) are enforced on this layer.
